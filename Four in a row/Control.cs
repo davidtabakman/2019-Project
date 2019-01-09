@@ -235,7 +235,7 @@ namespace Four_in_a_row
 
         }
 
-        private Players CheckWin()
+        public override Players CheckWin()
         {
             // Check wins horizontal
             Players curr = Players.NoPlayer;
@@ -330,7 +330,7 @@ namespace Four_in_a_row
             throw new NotImplementedException();
         }
 
-        public override int GetReward()
+        public override int GetReward(Players forPlayer)
         {
             throw new NotImplementedException();
         }

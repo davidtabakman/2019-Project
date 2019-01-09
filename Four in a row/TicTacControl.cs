@@ -12,15 +12,12 @@ namespace TicTacToe
 {
     public class TicTacControl : GameControlBase
     {
-        
-
         private Texture2D Board { get; set; }
         private Texture2D Circle { get; set; }
         private Texture2D X { get; set; }
         private Players[,] Tiles;
         private int RowNum;
         private int ColNum;
-        public Players CurrTurn { get; private set; }
         private Q_Leaning bot;
 
         public TicTacControl()
@@ -30,7 +27,54 @@ namespace TicTacToe
 
         private void StartBot()
         {
-            bot = new Q_Leaning(this, 10000);
+            bot = new Q_Leaning(this, Players.Player2);
+            bot.Learn(10000, 0.1f, 0.001f, 0.1f, 0.9f, null);
+            Q_Leaning bot2 = new Q_Leaning(this, Players.Player1);
+            bot2.Learn(10000, 0.1f, 0.001f, 0.1f, 0.9f, null);
+            bot.Learn(10000, 0.1f, 0.001f, 0.1f, 0.9f, bot2);
+            bot2.Learn(10000, 0.1f, 0.001f, 0.1f, 0.9f, bot);
+            bot.Learn(10000, 0.1f, 0.001f, 0.1f, 0.9f, bot2);
+            bot.Learn(1000000, 0.1f, 0.001f, 0.1f, 0.9f, null);
+        }
+
+        private Players[,] StateToTiles(State state)
+        {
+            int stateID = state.ID;
+            int stateIDInBase3 = 0;
+            int power = 0;
+            int length = 0;
+            while (stateID != 0)
+            {
+                stateIDInBase3 += stateID % 3 * (int)Math.Pow(10, power);
+                stateID /= 3;
+                length++;
+                power++;
+            }
+            Players[,] tmpTiles = new Players[ColNum, RowNum];
+            int x = 0;
+            int y = 0;
+            while(stateIDInBase3 != 0)
+            {
+                tmpTiles[x, y] = (Players)(stateIDInBase3 % 10);
+                stateIDInBase3 /= 10;
+                y++;
+                if (y > 2)
+                {
+                    y = 0;
+                    x++;
+                }
+            }
+            while (x < 3)
+            {
+                tmpTiles[x, y] = Players.NoPlayer;
+                y++;
+                if (y > 2)
+                {
+                    y = 0;
+                    x++;
+                }
+            }
+            return tmpTiles;
         }
 
         public override void Start(GraphicsDevice gd, int[] args)
@@ -122,12 +166,18 @@ namespace TicTacToe
         }
 
         public override void HandleClick(Vector2 position)
-        {
+        { 
             AddObject(position);
-            bot.TakeAciton(this, GetState());
+            StateToTiles(GetState());
+            if (IsTerminalState())
+                Clean();
+            if (CurrTurn == Players.Player2)
+                bot.TakeAction(this, GetState());
+            if (IsTerminalState())
+                Clean();
         }
 
-        private Players CheckWin()
+        public override Players CheckWin()
         {
             // Check wins horizontal
             Players curr = Players.NoPlayer;
@@ -292,9 +342,10 @@ namespace TicTacToe
         }
 
 
-        public override int GetReward()
+        public override int GetReward(Players forPlayer)
         {
-            if (CheckWin() == CurrTurn)
+
+            if (CheckWin() == forPlayer)
             {
                 return 10;
             }
@@ -329,7 +380,12 @@ namespace TicTacToe
 
         public override void Clean()
         {
-            Restart();
+            if (IsTerminalState())
+            {
+                Restart();
+                CurrTurn = Players.Player1;
+            }
+
         }
 
         public override bool IsLegalAction(Actione action)

@@ -39,7 +39,7 @@ namespace GameCenter
 
         private bool StartFourInARow()
         {
-            int[] args = { 7, 6, 1 };
+            int[] args = { 7, 6, 0 };
             GUIControl.Clear();
             GUIControl.AddButton(GraphicsDevice, new Rectangle(0, w_height - 25, 120, 25), "Exit", Color.Gray, "Exit", OnPressExit);
             FourInARowControl.Start(GraphicsDevice, args);
