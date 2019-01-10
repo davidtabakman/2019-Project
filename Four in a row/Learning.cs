@@ -35,6 +35,7 @@ namespace Learning
         private Random rand;
         private GameControlBase Control;
         public GameControlBase.Players BotTurn { get; private set; }
+        public bool IsLearning { get; private set; }
 
         private void Swap(float[] arr, int i1, int i2)
         {
@@ -78,8 +79,11 @@ namespace Learning
 
         public void Learn(int EpocheNumber, float EpsilonLimit, float EpsilonDecrease, float LearningRate, float DiscountRate, Q_Leaning against)
         {
+
+            IsLearning = true;
             int epoche_move_limit = 20;
             int current_epoche = 0;
+            int last_epcohe = 0;
 
             float epsilon = 1.0f; // exploration / exploitation
 
@@ -99,7 +103,7 @@ namespace Learning
                     if (!Control.IsTerminalState())
                     {
                         if (against != null)
-                            Control.DoAction(against.getMaxAction(Control, state));
+                            against.TakeAction(Control, Control.GetState());
                         else
                         {
                             botAction = new Actione(rand.Next(Control.ActionNum));
@@ -128,7 +132,7 @@ namespace Learning
                 // Bot takes action if possible (at the moment, the bot is random)
                 if (!Control.IsTerminalState()) {
                     if (against != null)
-                        Control.DoAction(against.getMaxAction(Control, state));
+                        against.TakeAction(Control, Control.GetState());
                     else
                     {
                         botAction = new Actione(rand.Next(Control.ActionNum));
@@ -154,7 +158,7 @@ namespace Learning
                     deltaQ = LearningRate * (reward + DiscountRate * Q_Table[newState.ID, getMaxAction(Control, newState).ID] - Q_Table[state.ID, action.ID]);
                 else
                 {
-                    deltaQ = LearningRate * (reward - Q_Table[state.ID, action.ID]); 
+                    deltaQ = LearningRate * (reward - Q_Table[state.ID, action.ID]);
                     current_epoche++;
                 }
                 Q_Table[state.ID, action.ID] += deltaQ;
@@ -163,19 +167,17 @@ namespace Learning
                 if (epsilon > EpsilonLimit)
                     epsilon -= EpsilonDecrease;
 
-                if (current_epoche % 1000 == 0)
+                if (current_epoche % 10000 == 0 && current_epoche != last_epcohe)
                 {
-                    if (wins != 0)
-                    {
-                        Console.WriteLine("Learning percentage: " + current_epoche / (float)EpocheNumber * 100 + "%, win rate: " + wins * 0.1f + "%");
-                        wins = 0;
-                    }
+                    last_epcohe = current_epoche;
+                    Console.WriteLine("Learning percentage: " + current_epoche / (float)EpocheNumber * 100 + "%, win rate: " + wins * 0.01f + "%");
+                    wins = 0;
                 }
 
                 // Make the control ready for another move
                 Control.Clean();
             }
-
+            IsLearning = false;
         }
 
         /// <summary>
@@ -191,6 +193,8 @@ namespace Learning
 
             ActionNum = control.ActionNum;
             StateNum = control.StateNum;
+
+            IsLearning = false;
         }
 
         public void TakeAction(GameControlBase control, State state)

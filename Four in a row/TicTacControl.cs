@@ -19,6 +19,7 @@ namespace TicTacToe
         private int RowNum;
         private int ColNum;
         private Q_Leaning bot;
+        private bool IsLearning;
 
         public TicTacControl()
         {
@@ -27,14 +28,13 @@ namespace TicTacToe
 
         private void StartBot()
         {
-            bot = new Q_Leaning(this, Players.Player2);
-            bot.Learn(10000, 0.1f, 0.001f, 0.1f, 0.9f, null);
-            Q_Leaning bot2 = new Q_Leaning(this, Players.Player1);
-            bot2.Learn(10000, 0.1f, 0.001f, 0.1f, 0.9f, null);
-            bot.Learn(10000, 0.1f, 0.001f, 0.1f, 0.9f, bot2);
-            bot2.Learn(10000, 0.1f, 0.001f, 0.1f, 0.9f, bot);
-            bot.Learn(10000, 0.1f, 0.001f, 0.1f, 0.9f, bot2);
+            IsLearning = true;
+            bot = new Q_Leaning(this, Players.Player1);
             bot.Learn(1000000, 0.1f, 0.001f, 0.1f, 0.9f, null);
+            Q_Leaning bot2 = new Q_Leaning(this, Players.Player2);
+            bot2.Learn(1000000, 0.1f, 0.001f, 0.1f, 0.9f, null);
+            IsLearning = false;
+            Restart();
         }
 
         private Players[,] StateToTiles(State state)
@@ -168,10 +168,9 @@ namespace TicTacToe
         public override void HandleClick(Vector2 position)
         { 
             AddObject(position);
-            StateToTiles(GetState());
             if (IsTerminalState())
                 Clean();
-            if (CurrTurn == Players.Player2)
+            if (CurrTurn == bot.BotTurn)
                 bot.TakeAction(this, GetState());
             if (IsTerminalState())
                 Clean();
@@ -280,6 +279,9 @@ namespace TicTacToe
                 }
             }
             CurrTurn = Players.Player1;
+
+            if (!IsLearning && bot.BotTurn == Players.Player1)
+                bot.TakeAction(this, GetState());
         }
 
         public override State GetState()
@@ -383,7 +385,6 @@ namespace TicTacToe
             if (IsTerminalState())
             {
                 Restart();
-                CurrTurn = Players.Player1;
             }
 
         }
