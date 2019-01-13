@@ -50,7 +50,7 @@ namespace GameCenter
 
         private bool StartTicTac()
         {
-            int[] args = { };
+            int[] args = { 5, 5, 4 };
             GUIControl.Clear();
             GUIControl.AddButton(GraphicsDevice, new Rectangle(0, w_height - 25, 120, 25), "Exit", Color.Gray, "Exit", OnPressExit);
             TicTacControl.Start(GraphicsDevice, args);

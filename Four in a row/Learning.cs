@@ -176,6 +176,7 @@ namespace Learning
 
                 // Make the control ready for another move
                 Control.Clean();
+
             }
             IsLearning = false;
         }

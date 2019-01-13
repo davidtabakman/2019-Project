@@ -18,6 +18,7 @@ namespace TicTacToe
         private Players[,] Tiles;
         private int RowNum;
         private int ColNum;
+        private int ToWin;
         private Q_Leaning bot;
         private bool IsLearning;
 
@@ -30,9 +31,7 @@ namespace TicTacToe
         {
             IsLearning = true;
             bot = new Q_Leaning(this, Players.Player1);
-            bot.Learn(1000000, 0.1f, 0.001f, 0.1f, 0.9f, null);
-            Q_Leaning bot2 = new Q_Leaning(this, Players.Player2);
-            bot2.Learn(1000000, 0.1f, 0.001f, 0.1f, 0.9f, null);
+            bot.Learn(2000000, 0.1f, 0.001f, 0.1f, 0.9f, null);
             IsLearning = false;
             Restart();
         }
@@ -79,8 +78,9 @@ namespace TicTacToe
 
         public override void Start(GraphicsDevice gd, int[] args)
         {
-            RowNum = 3;
-            ColNum = 3;
+            RowNum = args[0];
+            ColNum = args[1];
+            ToWin = args[2];
             ActionNum = RowNum * ColNum;
             StateNum = (int)Math.Pow(3, RowNum * ColNum);
             float deltaX = Game1.w_width / ColNum;
@@ -88,7 +88,7 @@ namespace TicTacToe
             Board = CreateBoard(gd);
             Circle = ShapeCreator.CreateHollowCircle(gd, deltaX, deltaY);
             X = ShapeCreator.CreateX(gd, deltaX, deltaY);
-            Tiles = new Players[3, 3];
+            Tiles = new Players[ColNum, RowNum];
             for (int x = 0; x < ColNum; x++)
             {
                 for (int y = 0; y < RowNum; y++)
@@ -100,9 +100,9 @@ namespace TicTacToe
             Running = true;
             CurrTurn = Players.Player1;
 
-            Thread thread = new Thread(
+            /*Thread thread = new Thread(
             new ThreadStart(StartBot));
-            thread.Start();
+            thread.Start();*/
         }
 
         private Texture2D CreateBoard(GraphicsDevice gd)
@@ -113,11 +113,18 @@ namespace TicTacToe
             SpriteBatch tmp = new SpriteBatch(gd);
             tmp.Begin();
 
+            //Draw background:
             tmp.Draw(ShapeCreator.rectangle(gd, Color.White, Game1.w_width, Game1.w_height), Vector2.Zero, Color.White);
-            tmp.Draw(ShapeCreator.rectangle(gd, Color.Black, 1, Game1.w_height), new Vector2(Game1.w_width / 3, 0), Color.White);
-            tmp.Draw(ShapeCreator.rectangle(gd, Color.Black, 1, Game1.w_height), new Vector2(2 * Game1.w_width / 3, 0), Color.White);
-            tmp.Draw(ShapeCreator.rectangle(gd, Color.Black, Game1.w_width, 1), new Vector2(0, Game1.w_height / 3), Color.White);
-            tmp.Draw(ShapeCreator.rectangle(gd, Color.Black, Game1.w_width, 1), new Vector2(0, 2 * Game1.w_height / 3), Color.White);
+
+            //Draw Collumns:
+            float deltaX = Game1.w_width / ColNum;
+            for (float i = deltaX; i < Game1.w_width; i += deltaX)
+                tmp.Draw(ShapeCreator.rectangle(gd, Color.Black, 1, Game1.w_height), new Vector2(i, 0), Color.White);
+
+            //Draw rows:
+            float deltaY = Game1.w_height / RowNum;
+            for (float i = deltaY; i < Game1.w_height; i += deltaY)
+                tmp.Draw(ShapeCreator.rectangle(gd, Color.Black, Game1.w_width, 1), new Vector2(0, i), Color.White);
 
             tmp.End();
             gd.SetRenderTargets(last);
@@ -158,9 +165,10 @@ namespace TicTacToe
             int addY = (int)(position.Y / deltaY);
 
             if (Tiles[addX, addY] == Players.NoPlayer)
+            {
                 Tiles[addX, addY] = CurrTurn;
-
-            NextTurn();
+                NextTurn();
+            }
 
             Clean();
         }
@@ -170,10 +178,10 @@ namespace TicTacToe
             AddObject(position);
             if (IsTerminalState())
                 Clean();
-            if (CurrTurn == bot.BotTurn)
+            /*if (CurrTurn == bot.BotTurn)
                 bot.TakeAction(this, GetState());
             if (IsTerminalState())
-                Clean();
+                Clean();*/
         }
 
         public override Players CheckWin()
@@ -195,7 +203,7 @@ namespace TicTacToe
                     else
                     {
                         count++;
-                        if (count == 2)
+                        if (count == ToWin-1)
                             return curr;
                     }
                 }
@@ -216,7 +224,7 @@ namespace TicTacToe
                     else
                     {
                         count++;
-                        if (count == 2)
+                        if (count == ToWin-1)
                             return curr;
                     }
                 }
@@ -224,16 +232,16 @@ namespace TicTacToe
             count = 0;
             // Check wins diagnoally
             curr = Players.NoPlayer;
-            for (int x = 0; x < ColNum - 2; x++)
+            for (int x = 0; x < ColNum - ToWin + 1; x++)
             {
                 curr = Players.NoPlayer;
-                for (int y = 0; y < RowNum - 2; y++)
+                for (int y = 0; y < RowNum - ToWin + 1; y++)
                 {
                     curr = Tiles[x, y];
                     count = 0;
                     while (curr == Tiles[x + count, y + count] && Tiles[x + count, y + count] != Players.NoPlayer)
                     {
-                        if (count == 2)
+                        if (count == ToWin-1)
                             return curr;
                         count++;
                     }
@@ -243,16 +251,16 @@ namespace TicTacToe
             count = 0;
             // Check wins diagnoally the other way
             curr = Players.NoPlayer;
-            for (int x = 0; x < ColNum - 2; x++)
+            for (int x = 0; x < ColNum - ToWin + 1; x++)
             {
                 curr = Players.NoPlayer;
-                for (int y = RowNum - 1; y > 1; y--)
+                for (int y = RowNum - 1; y >= ToWin - 1; y--)
                 {
                     curr = Tiles[x, y];
                     count = 0;
                     while (curr == Tiles[x + count, y - count] && Tiles[x + count, y - count] != Players.NoPlayer)
                     {
-                        if (count == 2)
+                        if (count == ToWin-1)
                             return curr;
                         count++;
                     }
@@ -280,8 +288,8 @@ namespace TicTacToe
             }
             CurrTurn = Players.Player1;
 
-            if (!IsLearning && bot.BotTurn == Players.Player1)
-                bot.TakeAction(this, GetState());
+            /*if (!IsLearning && bot.BotTurn == Players.Player1)
+                bot.TakeAction(this, GetState());*/
         }
 
         public override State GetState()
@@ -313,8 +321,8 @@ namespace TicTacToe
         public override void DoAction(Actione action)
         {
 
-            int addX = action.ID / ColNum;
-            int addY = action.ID % RowNum;
+            int addY = action.ID / ColNum;
+            int addX = action.ID % ColNum;
 
             if (Tiles[addX, addY] == Players.NoPlayer)
                 Tiles[addX, addY] = CurrTurn;
@@ -371,8 +379,8 @@ namespace TicTacToe
 
             while (Tiles[addX, addY] != Players.NoPlayer)
             {
-                addX = rand.Next(3);
-                addY = rand.Next(3);
+                addX = rand.Next(ColNum);
+                addY = rand.Next(RowNum);
             }
             Tiles[addX, addY] = CurrTurn;
 
@@ -391,8 +399,8 @@ namespace TicTacToe
 
         public override bool IsLegalAction(Actione action)
         {
-            int addX = action.ID / ColNum;
-            int addY = action.ID % RowNum;
+            int addY = action.ID / ColNum;
+            int addX = action.ID % ColNum;
 
             if (Tiles[addX, addY] == Players.NoPlayer)
                 return true;
