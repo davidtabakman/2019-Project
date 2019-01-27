@@ -42,8 +42,9 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Board.cs" />
+    <Compile Include="BotBase.cs" />
     <Compile Include="CircleObject.cs" />
-    <Compile Include="Control.cs" />
+    <Compile Include="FourInARowControl.cs" />
     <Compile Include="ControlBase.cs" />
     <Compile Include="DrawableObject.cs" />
     <Compile Include="EventHandler.cs" />

@@ -4,7 +4,7 @@
   <Platform>Windows</Platform>
   <Config />
   <SourceFiles>
-    <File>C:/David/2019-Project/Four in a row/Content/File.spritefont</File>
+    <File>C:/Users/Home/source/repos/Four in a row/2019-Project/Four in a row/Content/File.spritefont</File>
   </SourceFiles>
   <DestFiles>
     <File>Basic.spritefont</File>

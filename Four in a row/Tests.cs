@@ -15,4 +15,18 @@ namespace Helper
             
         }
     }
+
+    class Helper
+    {
+        public static void Zero(int[,] what)
+        {
+            for (int x = 0; x < what.GetLength(0); x++)
+            {
+                for (int y = 0; y < what.GetLength(1); y++)
+                {
+                    what[x, y] = 0;
+                }
+            }
+        }
+    }
 }

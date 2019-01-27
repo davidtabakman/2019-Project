@@ -70,3 +70,27 @@ C:\David\2019-Project\Four in a row\obj\x86\Debug\Four in a row.csproj.CoreCompi
 C:\David\2019-Project\Four in a row\obj\x86\Debug\Four in a row.csproj.CopyComplete
 C:\David\2019-Project\Four in a row\obj\x86\Debug\Four in a row.exe
 C:\David\2019-Project\Four in a row\obj\x86\Debug\Four in a row.pdb
+C:\Users\Home\source\repos\Four in a row\2019-Project-master\Four in a row\bin\Windows\x86\Debug\Content\Basic.xnb
+C:\Users\Home\source\repos\Four in a row\2019-Project-master\Four in a row\bin\Windows\x86\Debug\Four in a row.exe
+C:\Users\Home\source\repos\Four in a row\2019-Project-master\Four in a row\bin\Windows\x86\Debug\Four in a row.pdb
+C:\Users\Home\source\repos\Four in a row\2019-Project-master\Four in a row\bin\Windows\x86\Debug\MonoGame.Framework.dll
+C:\Users\Home\source\repos\Four in a row\2019-Project-master\Four in a row\bin\Windows\x86\Debug\SharpDX.MediaFoundation.dll
+C:\Users\Home\source\repos\Four in a row\2019-Project-master\Four in a row\bin\Windows\x86\Debug\SharpDX.dll
+C:\Users\Home\source\repos\Four in a row\2019-Project-master\Four in a row\bin\Windows\x86\Debug\SharpDX.XAudio2.dll
+C:\Users\Home\source\repos\Four in a row\2019-Project-master\Four in a row\bin\Windows\x86\Debug\SharpDX.DXGI.dll
+C:\Users\Home\source\repos\Four in a row\2019-Project-master\Four in a row\bin\Windows\x86\Debug\SharpDX.Direct3D11.dll
+C:\Users\Home\source\repos\Four in a row\2019-Project-master\Four in a row\bin\Windows\x86\Debug\SharpDX.Direct2D1.dll
+C:\Users\Home\source\repos\Four in a row\2019-Project-master\Four in a row\bin\Windows\x86\Debug\SharpDX.XInput.dll
+C:\Users\Home\source\repos\Four in a row\2019-Project-master\Four in a row\bin\Windows\x86\Debug\MonoGame.Framework.xml
+C:\Users\Home\source\repos\Four in a row\2019-Project-master\Four in a row\bin\Windows\x86\Debug\SharpDX.MediaFoundation.xml
+C:\Users\Home\source\repos\Four in a row\2019-Project-master\Four in a row\bin\Windows\x86\Debug\SharpDX.xml
+C:\Users\Home\source\repos\Four in a row\2019-Project-master\Four in a row\bin\Windows\x86\Debug\SharpDX.XAudio2.xml
+C:\Users\Home\source\repos\Four in a row\2019-Project-master\Four in a row\bin\Windows\x86\Debug\SharpDX.DXGI.xml
+C:\Users\Home\source\repos\Four in a row\2019-Project-master\Four in a row\bin\Windows\x86\Debug\SharpDX.Direct3D11.xml
+C:\Users\Home\source\repos\Four in a row\2019-Project-master\Four in a row\bin\Windows\x86\Debug\SharpDX.Direct2D1.xml
+C:\Users\Home\source\repos\Four in a row\2019-Project-master\Four in a row\bin\Windows\x86\Debug\SharpDX.XInput.xml
+C:\Users\Home\source\repos\Four in a row\2019-Project-master\Four in a row\obj\x86\Debug\Four in a row.csprojAssemblyReference.cache
+C:\Users\Home\source\repos\Four in a row\2019-Project-master\Four in a row\obj\x86\Debug\Four in a row.csproj.CoreCompileInputs.cache
+C:\Users\Home\source\repos\Four in a row\2019-Project-master\Four in a row\obj\x86\Debug\Four in a row.csproj.CopyComplete
+C:\Users\Home\source\repos\Four in a row\2019-Project-master\Four in a row\obj\x86\Debug\Four in a row.exe
+C:\Users\Home\source\repos\Four in a row\2019-Project-master\Four in a row\obj\x86\Debug\Four in a row.pdb

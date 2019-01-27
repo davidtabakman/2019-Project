@@ -4,30 +4,9 @@ using System.Threading;
 
 namespace Learning
 {
-    public class Actione
-    {
-        public int ID { get; private set; }
-
-        public Actione(int ID)
-        {
-            this.ID = ID;
-        }
-    }
-
-    public class State
-    {
-        public int ID { get; private set; }
-
-        public State(int ID)
-        {
-            this.ID = ID;
-        }
-    }
     
-    // TO DO:
-    // FIX THIS BULLSHIT :
-    // SPLIT INTO FUNCTIONS, MAKE SAFE
-    public class Q_Leaning
+    
+    public class Q_Learning : Bot
     {
         public float[,] Q_Table { get; private set; }
         private int ActionNum;
@@ -76,8 +55,24 @@ namespace Learning
             
         }
 
+        private void BotMove(Bot against)
+        {
+            Actione botAction;
+            if (!Control.IsTerminalState())
+            {
+                if (against != null)
+                    against.TakeAction(Control, Control.GetState());
+                else
+                {
+                    botAction = new Actione(rand.Next(Control.ActionNum));
+                    while (!Control.IsLegalAction(botAction))
+                        botAction = new Actione(rand.Next(Control.ActionNum));
+                    Control.DoAction(botAction);
+                }
+            }
+        }
 
-        public void Learn(int EpocheNumber, float EpsilonLimit, float EpsilonDecrease, float LearningRate, float DiscountRate, Q_Leaning against)
+        public void Learn(int EpocheNumber, float EpsilonLimit, float EpsilonDecrease, float LearningRate, float DiscountRate, Bot against=null)
         {
 
             IsLearning = true;
@@ -94,24 +89,13 @@ namespace Learning
             State newState;
             int reward = 0;
             Actione action;
-            Actione botAction;
+            
             while (current_epoche < EpocheNumber)
             {
                 
                 if (BotTurn != Control.CurrTurn)
                 {
-                    if (!Control.IsTerminalState())
-                    {
-                        if (against != null)
-                            against.TakeAction(Control, Control.GetState());
-                        else
-                        {
-                            botAction = new Actione(rand.Next(Control.ActionNum));
-                            while (!Control.IsLegalAction(botAction))
-                                botAction = new Actione(rand.Next(Control.ActionNum));
-                            Control.DoAction(botAction);
-                        }
-                    }
+                    BotMove(against);
                 }
                 // Observe state
                 state = Control.GetState();
@@ -131,15 +115,7 @@ namespace Learning
 
                 // Bot takes action if possible (at the moment, the bot is random)
                 if (!Control.IsTerminalState()) {
-                    if (against != null)
-                        against.TakeAction(Control, Control.GetState());
-                    else
-                    {
-                        botAction = new Actione(rand.Next(Control.ActionNum));
-                        while (!Control.IsLegalAction(botAction))
-                            botAction = new Actione(rand.Next(Control.ActionNum));
-                        Control.DoAction(botAction);
-                    }
+                    BotMove(against);
                 } else
                 {
                     if (Control.CheckWin() == BotTurn)
@@ -185,7 +161,7 @@ namespace Learning
         /// Fuction will create a Q-Learning bot that uses a regular Q-function value table
         /// </summary>
         /// <param name="control">The game that is to be learned, bot attaches to it</param>
-        public Q_Leaning(GameControlBase control, GameControlBase.Players player)
+        public Q_Learning(GameControlBase control, GameControlBase.Players player)
         {
             Control = control;
             Q_Table = new float[control.StateNum, control.ActionNum];
@@ -198,7 +174,7 @@ namespace Learning
             IsLearning = false;
         }
 
-        public void TakeAction(GameControlBase control, State state)
+        public override void TakeAction(GameControlBase control, State state)
         {
             Actione action = getMaxAction(control, state);
             control.DoAction(action);
