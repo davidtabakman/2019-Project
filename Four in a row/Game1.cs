@@ -83,8 +83,9 @@ namespace GameCenter
             //Initialize event handler
             EventHandle.InitEventHandle(this);
             MainFont = Content.Load<SpriteFont>("Basic");
-            Network.Network net = new Network.Network( new List<int>() { 2, 2, 1 }, Network.Activation_Functions.Default);
+            Network.Network net = new Network.Network( new List<int>() { 2, 2, 1 }, Network.Activation_Functions.Sigmoid, 0.0);
             net.Print();
+            net.Feed(new int[] { 1, 2 });
             GUIControl.Start(GraphicsDevice, null);
             GUIControl.AddButton(GraphicsDevice, new Rectangle(0, 0, 120, 25), "Start 4 in a row", Color.Gray, "Four Start" , StartFourInARow);
             GUIControl.AddButton(GraphicsDevice, new Rectangle(130, 0, 120, 25), "Start Tic Tac Tow", Color.Gray, "Tic Start", StartTicTac);

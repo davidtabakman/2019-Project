@@ -65,10 +65,8 @@ namespace Network
         {
             Neurons = new List<Neuron>();
             for (int i = 0; i < numOfNeurons; i++)
-            {
-                Neuron newNeuron = new Neuron(ActivationFunc);
-                
-                Neurons.Add(new Neuron(Activation_Functions.Default));
+            {                
+                Neurons.Add(new Neuron(ActivationFunc));
             }
         }
 
