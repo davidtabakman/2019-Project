@@ -1,8 +1,9 @@
 ﻿using System;
-using GUI;
+using Controller;
 using GameCenter;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
+using System.Linq;
 
 namespace Four_in_a_row
 {
@@ -22,14 +23,13 @@ namespace Four_in_a_row
             Vector2 position = eventArgs.Position;
             if (game.IsActive && position.X > 0 && position.X < Game1.w_width && position.Y > 0 && position.Y < Game1.w_height)
             {
-                if (Game1.FourInARowControl.Running)
-                    Game1.FourInARowControl.HandleClick(eventArgs.Position);
+                List<ControlBase> controls = Game1.Screen.controls.Keys.ToList();
+                foreach (ControlBase control in controls)
+                {
+                    if (control.Running)
+                        control.HandleClick(eventArgs.Position);
+                }
 
-                if (Game1.TicTacControl.Running)
-                    Game1.TicTacControl.HandleClick(eventArgs.Position);
-
-                if (Game1.GUIControl.Running)
-                    Game1.GUIControl.HandleClick(eventArgs.Position);
             }
             
         }

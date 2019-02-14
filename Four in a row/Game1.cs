@@ -23,9 +23,8 @@ namespace GameCenter
         public const int w_width = 1000;
         public const int w_height = 1000;
 
-        public static FourInARowControl FourInARowControl;
         public static GUIControl GUIControl;
-        public static TicTacControl TicTacControl;
+        public static Screen Screen;
 
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
@@ -40,9 +39,10 @@ namespace GameCenter
         private bool StartFourInARow()
         {
             int[] args = { 7, 6, 1 };
-            GUIControl.Clear();
-            GUIControl.AddButton(GraphicsDevice, new Rectangle(0, w_height - 25, 120, 25), "Exit", Color.Gray, "Exit", OnPressExit);
-            FourInARowControl.Start(GraphicsDevice, args);
+            Screen.GetGUI().Clear();
+            Screen.GetGUI().AddButton(GraphicsDevice, new Rectangle(0, w_height - 25, 120, 25), "Exit", Color.Gray, "Exit", OnPressExit);
+            Screen.AddControl(new FourInARowControl(), args);
+            Screen.Start(GraphicsDevice);
             return true;
         }
 
@@ -51,9 +51,10 @@ namespace GameCenter
         private bool StartTicTac()
         {
             int[] args = { 3, 3, 3 };
-            GUIControl.Clear();
-            GUIControl.AddButton(GraphicsDevice, new Rectangle(0, w_height - 25, 120, 25), "Exit", Color.Gray, "Exit", OnPressExit);
-            TicTacControl.Start(GraphicsDevice, args);
+            Screen.GetGUI().Clear();
+            Screen.GetGUI().AddButton(GraphicsDevice, new Rectangle(0, w_height - 25, 120, 25), "Exit", Color.Gray, "Exit", OnPressExit);
+            Screen.AddControl(new TicTacControl(), args);
+            Screen.Start(GraphicsDevice);
 
             return true;
         }
@@ -72,8 +73,6 @@ namespace GameCenter
         protected override void Initialize()
         {
             GUIControl = new GUIControl();
-            FourInARowControl = new FourInARowControl();
-            TicTacControl = new TicTacControl();
             // TODO: Add your initialization logic here
             IsMouseVisible = true;
             // Change initialization size to constants
@@ -89,6 +88,8 @@ namespace GameCenter
             GUIControl.Start(GraphicsDevice, null);
             GUIControl.AddButton(GraphicsDevice, new Rectangle(0, 0, 120, 25), "Start 4 in a row", Color.Gray, "Four Start" , StartFourInARow);
             GUIControl.AddButton(GraphicsDevice, new Rectangle(130, 0, 120, 25), "Start Tic Tac Tow", Color.Gray, "Tic Start", StartTicTac);
+            Screen = new Screen();
+            Screen.SetGUI(GUIControl);
             base.Initialize();
         }
 
@@ -127,8 +128,8 @@ namespace GameCenter
             // TODO: Add your update logic here
             // Update mouse manager
             Mousey.Update();
-            if (FourInARowControl.Running)
-                FourInARowControl.Update(gameTime);
+            Screen.Update(gameTime);
+            
             
             base.Update(gameTime);
         }
@@ -144,13 +145,8 @@ namespace GameCenter
             // TODO: Add your drawing code here
             spriteBatch.Begin();
             // Draw the state in Controller
-            
-            if (FourInARowControl.Running)
-                FourInARowControl.Draw(spriteBatch);
-            if (TicTacControl.Running)
-                TicTacControl.Draw(spriteBatch);
-            if (GUIControl.Running)
-                GUIControl.Draw(spriteBatch);
+
+            Screen.Draw(spriteBatch);
 
             spriteBatch.End();
             base.Draw(gameTime);

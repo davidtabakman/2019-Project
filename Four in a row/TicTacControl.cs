@@ -153,7 +153,7 @@ namespace TicTacToe
 
         public override void Update(GameTime gameTime)
         {
-            throw new NotImplementedException();
+            return;
         }
 
         private void AddObject(Vector2 position)
