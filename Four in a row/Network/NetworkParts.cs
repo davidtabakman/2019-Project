@@ -6,19 +6,19 @@ using System.Threading.Tasks;
 
 namespace Network
 {
-    class Pulse
+    public class Pulse
     {
         public double Value { get; set; }
     }
 
-    class Connection
+    public class Connection
     {
         public Pulse InputPulse { get; set; }
         public double Weight { get; set; }
         public bool isLearnable { get; set; }
     }
 
-    class Neuron
+    public class Neuron
     {
 
         public List<Connection> InputConnections { get; set; }
@@ -57,7 +57,7 @@ namespace Network
         }
     }
 
-    class NeuronLayer
+    public class NeuronLayer
     {
         public List<Neuron> Neurons { get; set; }
 

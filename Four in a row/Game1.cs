@@ -82,7 +82,9 @@ namespace GameCenter
             //Initialize event handler
             EventHandle.InitEventHandle(this);
             MainFont = Content.Load<SpriteFont>("Basic");
-            Network.Network net = new Network.Network( new List<int>() { 2, 2, 1 }, Network.Activation_Functions.Sigmoid, 0.0);
+            Network.Network net = new Network.Network( new List<int>() { 2, 2, 1 }, Network.Activation_Functions.Sigmoid, 1.5);
+            Network.NetworkLoader.SaveNetwork(net, "net1");
+            net = Network.NetworkLoader.LoadNetwork("net1");
             net.Print();
             net.Feed(new int[] { 1, 2 });
             GUIControl.Start(GraphicsDevice, null);

@@ -56,6 +56,7 @@
     <Compile Include="Learning.cs" />
     <Compile Include="Mousey.cs" />
     <Compile Include="Network\Activation Functions.cs" />
+    <Compile Include="Network\FileIO.cs" />
     <Compile Include="Network\Network.cs" />
     <Compile Include="Network\NetworkParts.cs" />
     <Compile Include="Physics.cs" />

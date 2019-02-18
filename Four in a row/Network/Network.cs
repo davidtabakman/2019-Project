@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace Network
 {
-    class Network
+    public class Network
     {
-        List<NeuronLayer> Layers { get; set; }
+        public List<NeuronLayer> Layers { get; set; }
 
         public Network(List<int> Dimensions, Func<double, double> ActivationFunc, double initWeight)
         {
