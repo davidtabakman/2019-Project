@@ -7,9 +7,11 @@ namespace Network
 {
     public class NetworkLoader
     {
+        private const string NetworkFileExtention = ".dtp";
+
         public static void SaveNetwork(Network net, string NetName)
         {
-            NetName += ".dtp";
+            NetName += NetworkFileExtention;
             string header = "";
             for (int i = 0; i < net.Layers.Count - 1; i++)
             {
@@ -48,7 +50,7 @@ namespace Network
 
         public static Network LoadNetwork(string NetName)
         {
-            NetName += ".dtp";
+            NetName += NetworkFileExtention;
             try
             {
                 StreamReader r = File.OpenText(NetName);
