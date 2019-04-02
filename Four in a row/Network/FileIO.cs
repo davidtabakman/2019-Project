@@ -9,23 +9,34 @@ namespace Network
     {
         private const string NetworkFileExtention = ".dtp";
 
+        /// <summary>
+        /// Saves a neural network with a given name as a .dtp file.
+        /// </summary>
+        /// <param name="net"></param>
+        /// <param name="NetName"></param>
         public static void SaveNetwork(Network net, string NetName)
         {
+            // Creates a header of this shape (string): ActivationFuncID FirstLayerNeuronNum SecondLayerNeuronNum ... LastLayerNeuronNum
             NetName += NetworkFileExtention;
             string header = "";
+            header += net.Activation.ID;
+            header += " ";
             for (int i = 0; i < net.Layers.Count - 1; i++)
             {
                 header += net.Layers[i].Neurons.Count;
                 header += " ";
             }
             header += net.Layers[net.Layers.Count - 1].Neurons.Count;
+            // Tries to save the file
             try
             {
                 FileInfo fi = new FileInfo(NetName);
                 StreamWriter w = fi.CreateText();
+                // Writes the header
                 w.WriteLine(header);
                 w.WriteLine();
                 string currLayer = "";
+                // Writes all the wieghts, each layer on its line
                 for (int x = 1; x < net.Layers.Count; x++)
                 {
                     foreach (Neuron neuron in net.Layers[x].Neurons)
@@ -48,15 +59,26 @@ namespace Network
             }
         }
 
+        /// <summary>
+        /// Loads a neural network file (.dtp)
+        /// </summary>
+        /// <param name="NetName">The network name, does not include the ending (.dtp)</param>
+        /// <returns>The neural network</returns>
         public static Network LoadNetwork(string NetName)
         {
             NetName += NetworkFileExtention;
             try
             {
                 StreamReader r = File.OpenText(NetName);
+                // Reades the header and translates it
                 string header = r.ReadLine();
-                Network retNet = new Network(StringToIntList(header), Activation_Functions.Sigmoid, 0.0);
+                List<int> headerTranslate = StringToIntList(header);
+                Activation_Function function = Activation_Functions.Functions[headerTranslate[0]];
+                // Makes it dimensions only
+                headerTranslate.RemoveAt(0);
+                Network retNet = new Network(headerTranslate, function, 0.0);
                 r.ReadLine();
+                // Extracts the weights
                 string readWeights;
                 int currLayer = 1;
                 List<double> layerWeights;
@@ -83,6 +105,12 @@ namespace Network
             }
         }
 
+        /// <summary>
+        /// Converts a string to a list of integers, splitting the string by spaces. 
+        /// Assumes input is correct.
+        /// </summary>
+        /// <param name="input"></param>
+        /// <returns></returns>
         private static List<int> StringToIntList(string input)
         {
             string[] splitString = input.Split(' ');
@@ -95,6 +123,12 @@ namespace Network
             return dimentions;
         }
 
+        /// <summary>
+        /// Converts a string to a list of doubles, splitting the string by spaces. 
+        /// Assumes input is correct.
+        /// </summary>
+        /// <param name="input"></param>
+        /// <returns></returns>
         private static List<double> StringToDoubleList(string input)
         {
             string[] splitString = input.Split(' ');

@@ -9,18 +9,20 @@ namespace Network
     public class Network
     {
         public List<NeuronLayer> Layers { get; set; }
+        public Activation_Function Activation { get; set; }
 
-        public Network(List<int> Dimensions, Func<double, double> ActivationFunc, double initWeight)
+        public Network(List<int> Dimensions, Activation_Function activation_Function, double initWeight)
         {
             Layers = new List<NeuronLayer>();
+            Activation = activation_Function;
 
             if (Dimensions.Count() > 0)
             {
-                Layers.Add(new NeuronLayer(Dimensions[0], initWeight, ActivationFunc));
+                Layers.Add(new NeuronLayer(Dimensions[0], initWeight, Activation.Function));
                 for (int LayerNum = 1; LayerNum < Dimensions.Count(); LayerNum++)
                 {
                     int LastLayerSize = Layers[LayerNum - 1].Neurons.Count;
-                    Layers.Add(new NeuronLayer(Dimensions[LayerNum], initWeight, ActivationFunc));
+                    Layers.Add(new NeuronLayer(Dimensions[LayerNum], initWeight, Activation.Function));
                     foreach (Neuron nto in Layers[LayerNum].Neurons)
                     {
                         foreach (Neuron nfrom in Layers[LayerNum - 1].Neurons)

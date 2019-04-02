@@ -12,7 +12,35 @@ using System.Threading;
 
 namespace GameCenter
 {
-    
+ 
+    public class Commands
+    {
+        public static bool StartFourInARow(GraphicsDevice GraphicsDevice)
+        {
+            int[] args = { 7, 6, 1 };
+            Game1.Screen.SetGUI(PresetGuis.InGame);
+            Game1.Screen.AddControl(new FourInARowControl(), args);
+            Game1.Screen.Start(GraphicsDevice);
+            return true;
+        }
+
+        public static bool StartTicTac(GraphicsDevice GraphicsDevice)
+        {
+            int[] args = { 3, 3, 3 };
+            Game1.Screen.SetGUI(PresetGuis.InGame);
+            Game1.Screen.AddControl(new TicTacControl(), args);
+            Game1.Screen.Start(GraphicsDevice);
+
+            return true;
+        }
+
+        public static bool OnPressExit()
+        {
+            Game1.Screen.Clear();
+            Game1.Screen.SetGUI(PresetGuis.Menu);
+            return true;
+        }
+    }
     /// <summary>
     /// This is the main type for your game.
     /// </summary>
@@ -26,6 +54,8 @@ namespace GameCenter
         public static GUIControl GUIControl;
         public static Screen Screen;
 
+        public static bool ShutDown = false;
+
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
         public static SpriteFont MainFont { get; set; }
@@ -36,34 +66,6 @@ namespace GameCenter
             Content.RootDirectory = "Content";
         }
 
-        private bool StartFourInARow()
-        {
-            int[] args = { 7, 6, 1 };
-            Screen.GetGUI().Clear();
-            Screen.GetGUI().AddButton(GraphicsDevice, new Rectangle(0, w_height - 25, 120, 25), "Exit", Color.Gray, "Exit", OnPressExit);
-            Screen.AddControl(new FourInARowControl(), args);
-            Screen.Start(GraphicsDevice);
-            return true;
-        }
-
-        
-
-        private bool StartTicTac()
-        {
-            int[] args = { 3, 3, 3 };
-            Screen.GetGUI().Clear();
-            Screen.GetGUI().AddButton(GraphicsDevice, new Rectangle(0, w_height - 25, 120, 25), "Exit", Color.Gray, "Exit", OnPressExit);
-            Screen.AddControl(new TicTacControl(), args);
-            Screen.Start(GraphicsDevice);
-
-            return true;
-        }
-
-        private bool OnPressExit()
-        {
-            Exit();
-            return true;
-        }
         /// <summary>
         /// Allows the game to perform any initialization it needs to before starting to run.
         /// This is where it can query for any required services and load any non-graphic
@@ -72,7 +74,6 @@ namespace GameCenter
         /// </summary>
         protected override void Initialize()
         {
-            GUIControl = new GUIControl();
             // TODO: Add your initialization logic here
             IsMouseVisible = true;
             // Change initialization size to constants
@@ -87,11 +88,9 @@ namespace GameCenter
             net = Network.NetworkLoader.LoadNetwork("net1");
             net.Print();
             net.Feed(new int[] { 1, 2 });
-            GUIControl.Start(GraphicsDevice, null);
-            GUIControl.AddButton(GraphicsDevice, new Rectangle(0, 0, 120, 25), "Start 4 in a row", Color.Gray, "Four Start" , StartFourInARow);
-            GUIControl.AddButton(GraphicsDevice, new Rectangle(130, 0, 120, 25), "Start Tic Tac Tow", Color.Gray, "Tic Start", StartTicTac);
+            PresetGuis.Setup(GraphicsDevice);
             Screen = new Screen();
-            Screen.SetGUI(GUIControl);
+            Screen.SetGUI(PresetGuis.Menu);
             base.Initialize();
         }
 
@@ -131,8 +130,10 @@ namespace GameCenter
             // Update mouse manager
             Mousey.Update();
             Screen.Update(gameTime);
-            
-            
+
+            if (ShutDown)
+                Exit();
+
             base.Update(gameTime);
         }
 

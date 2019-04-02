@@ -65,5 +65,10 @@ namespace GameCenter
             GUIControl.Draw(spriteBatch);
         }
 
+        public void Clear()
+        {
+            controls = new Dictionary<ControlBase, int[]>();
+            GUIControl = null;
+        }
     }
 }
