@@ -19,20 +19,22 @@ namespace TicTacToe
         private int RowNum;
         private int ColNum;
         private int ToWin;
-        private Q_Learning bot;
-        private bool IsLearning;
+        private LearningBot bot;
 
         public TicTacControl()
         {
             
         }
 
+        public void AttachBot(LearningBot botAttach)
+        {
+            bot = botAttach;
+        }
+
         private void StartBot()
         {
-            IsLearning = true;
-            bot = new Q_Learning(this, Players.Player2);
+            bot.Setup(this, Players.Player1);
             bot.Learn(2000000, 0.1f, 0.001f, 0.1f, 0.9f);
-            IsLearning = false;
             Restart();
         }
 
@@ -174,11 +176,13 @@ namespace TicTacToe
         }
 
         public override void HandleClick(Vector2 position)
-        { 
+        {
+            if (bot != null && bot.IsLearning)
+                return;
             AddObject(position);
             if (IsTerminalState())
                 Clean();
-            if (CurrTurn == bot.BotTurn)
+            if (bot != null && CurrTurn == bot.BotTurn)
                 bot.TakeAction(this, GetState());
             if (IsTerminalState())
                 Clean();
@@ -275,6 +279,8 @@ namespace TicTacToe
             Board.Dispose();
             Circle.Dispose();
             X.Dispose();
+            if(bot != null)
+                bot.Stop();
         }
 
         public void Restart()
@@ -288,7 +294,7 @@ namespace TicTacToe
             }
             CurrTurn = Players.Player1;
 
-            if (!IsLearning && bot.BotTurn == Players.Player1)
+            if (bot != null && !bot.IsLearning && bot.BotTurn == Players.Player1)
                 bot.TakeAction(this, GetState());
         }
 

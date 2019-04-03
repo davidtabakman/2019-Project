@@ -6,15 +6,13 @@ namespace Learning
 {
     
     
-    public class Q_Learning : Bot
+    public class Q_Learning : LearningBot
     {
         public float[,] Q_Table { get; private set; }
         private int ActionNum;
         private int StateNum;
         private Random rand;
         private GameControlBase Control;
-        public GameControlBase.Players BotTurn { get; private set; }
-        public bool IsLearning { get; private set; }
 
         private void Swap(float[] arr, int i1, int i2)
         {
@@ -72,7 +70,12 @@ namespace Learning
             }
         }
 
-        public void Learn(int EpocheNumber, float EpsilonLimit, float EpsilonDecrease, float LearningRate, float DiscountRate, Bot against=null)
+        public override void Stop()
+        {
+            IsLearning = false;
+        }
+
+        public override void Learn(int EpocheNumber, float EpsilonLimit, float EpsilonDecrease, float LearningRate, float DiscountRate, Bot against=null)
         {
 
             IsLearning = true;
@@ -90,7 +93,7 @@ namespace Learning
             int reward = 0;
             Actione action;
             
-            while (current_epoche < EpocheNumber)
+            while (current_epoche < EpocheNumber && IsLearning)
             {
                 
                 if (BotTurn != Control.CurrTurn)
@@ -161,17 +164,22 @@ namespace Learning
         /// Fuction will create a Q-Learning bot that uses a regular Q-function value table
         /// </summary>
         /// <param name="control">The game that is to be learned, bot attaches to it</param>
-        public Q_Learning(GameControlBase control, GameControlBase.Players player)
+        public Q_Learning()
+        {
+            
+            rand = new Random();
+            
+            IsLearning = false;
+        }
+
+        public override void Setup(GameControlBase control, GameControlBase.Players player)
         {
             Control = control;
             Q_Table = new float[control.StateNum, control.ActionNum];
-            rand = new Random();
             BotTurn = player;
 
             ActionNum = control.ActionNum;
             StateNum = control.StateNum;
-
-            IsLearning = false;
         }
 
         public override void TakeAction(GameControlBase control, State state)

@@ -67,6 +67,11 @@ namespace GameCenter
 
         public void Clear()
         {
+            foreach (ControlBase control in controls.Keys)
+            {
+                if (control != GUIControl)
+                    control.Clear();
+            }
             controls = new Dictionary<ControlBase, int[]>();
             GUIControl = null;
         }
