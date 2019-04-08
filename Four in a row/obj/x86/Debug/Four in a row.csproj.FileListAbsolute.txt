@@ -94,3 +94,5 @@ C:\Users\Home\source\repos\Four in a row\2019-Project-master\Four in a row\obj\x
 C:\Users\Home\source\repos\Four in a row\2019-Project-master\Four in a row\obj\x86\Debug\Four in a row.csproj.CopyComplete
 C:\Users\Home\source\repos\Four in a row\2019-Project-master\Four in a row\obj\x86\Debug\Four in a row.exe
 C:\Users\Home\source\repos\Four in a row\2019-Project-master\Four in a row\obj\x86\Debug\Four in a row.pdb
+C:\David\2019-Project\Four in a row\bin\Windows\x86\Debug\System.Numerics.Vectors.dll
+C:\David\2019-Project\Four in a row\bin\Windows\x86\Debug\System.Numerics.Vectors.xml

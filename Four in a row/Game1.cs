@@ -9,6 +9,7 @@ using System;
 using Learning;
 using Controller;
 using System.Threading;
+using Network;
 
 namespace GameCenter
 {
@@ -87,8 +88,12 @@ namespace GameCenter
             Network.Network net = new Network.Network( new List<int>() { 2, 2, 1 }, Network.Activation_Functions.Sigmoid, 1.5);
             Network.NetworkLoader.SaveNetwork(net, "net1");
             net = Network.NetworkLoader.LoadNetwork("net1");
+            NetworkVectors net2 = new NetworkVectors(new List<int>() { 4, 3, 2 }, Network.Activation_Functions.Sigmoid, 1.5);
+            net2.Print();
+            net2.Feed(new double[] { 0.2, 0.1, 0, -0.1 });
+            net2.Print();
             net.Print();
-            net.Feed(new int[] { 1, 2 });
+            net.Feed(new double[] { 1, 2 });
             PresetGuis.Setup(GraphicsDevice);
             Screen = new Screen();
             Screen.SetGUI(PresetGuis.Menu);

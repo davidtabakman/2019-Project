@@ -45,7 +45,7 @@ namespace Network
             }
         }
 
-        public void Feed(int[] input)
+        public void Feed(double[] input)
         {
             if (input.Length == Layers[0].Neurons.Count)
             {
