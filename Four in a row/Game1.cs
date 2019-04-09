@@ -88,10 +88,14 @@ namespace GameCenter
             Network.Network net = new Network.Network( new List<int>() { 2, 2, 1 }, Network.Activation_Functions.Sigmoid, 1.5);
             Network.NetworkLoader.SaveNetwork(net, "net1");
             net = Network.NetworkLoader.LoadNetwork("net1");
-            NetworkVectors net2 = new NetworkVectors(new List<int>() { 4, 3, 2 }, Network.Activation_Functions.Sigmoid, 1.5);
+            NetworkVectors net2 = new NetworkVectors(new List<int>() { 4, 3, 2 }, 1.5);
             net2.Print();
             net2.Feed(new double[] { 0.2, 0.1, 0, -0.1 });
+            NetworkLoader.SaveSerializable(net2, "net2");
+            net2 = null;
+            net2 = NetworkLoader.LoadNetworkVectors("net2");
             net2.Print();
+            net2.GetGradient(new double[]{ 0.5, 0.5 });
             net.Print();
             net.Feed(new double[] { 1, 2 });
             PresetGuis.Setup(GraphicsDevice);

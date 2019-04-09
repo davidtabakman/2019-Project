@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.Runtime.Serialization.Formatters.Binary;
+using System.Runtime.Serialization;
 
 namespace Network
 {
@@ -139,6 +141,50 @@ namespace Network
                 retList.Add(num);
             }
             return retList;
+        }
+
+        public static void SaveSerializable(NetworkVectors net, string NetName)
+        {
+            string path = NetName + NetworkFileExtention;
+
+            try
+            {
+                Stream saveFile = File.Open(path, FileMode.Create);
+
+                BinaryFormatter binaryFormatter = new BinaryFormatter();
+
+                binaryFormatter.Serialize(saveFile, net);
+
+                saveFile.Close();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Error saving the serializable object: {0}", e.Message);
+            }
+            
+        }
+
+        public static NetworkVectors LoadNetworkVectors(string NetName)
+        {
+            string path = NetName + NetworkFileExtention;
+
+            try
+            {
+                Stream saveFile = File.Open(path, FileMode.Open);
+
+                BinaryFormatter binaryFormatter = new BinaryFormatter();
+
+                NetworkVectors networkVectors = (NetworkVectors)binaryFormatter.Deserialize(saveFile);
+
+                saveFile.Close();
+
+                return networkVectors;
+            }
+            catch
+            {
+                Console.WriteLine("Error saving the serializable object");
+                return null;
+            }
         }
     }
 }

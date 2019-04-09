@@ -88,5 +88,45 @@ namespace Helper
              }
             return Sum(target);
         }
+
+        public static double[] ScalarMultiply(double[] vec, double value)
+        {
+            double[] retVec = new double[vec.Length];
+            for(int i = 0; i < vec.Length; i++)
+            {
+                retVec[i] = vec[i] * value;
+            }
+            return retVec;
+        }
+
+        public static double[] Sub(double[] from, double[] what)
+        {
+            double[] retVec = new double[from.Length];
+            for (int i = 0; i < from.Length; i++)
+            {
+                retVec[i] = from[i] - what[i];
+            }
+            return retVec;
+        }
+
+        public static double[] Multiply(double[] vec1, double[] vec2)
+        {
+            double[] retVec = new double[vec1.Length];
+            for (int i = 0; i < vec1.Length; i++)
+            {
+                retVec[i] = vec1[i] * vec2[i];
+            }
+            return retVec;
+        }
+
+        public static double[] ApplyFunciton(double[] to, Func<double, double> func)
+        {
+            double[] retVec = new double[to.Length];
+            for (int i = 0; i < to.Length; i++)
+            {
+                retVec[i] = func(to[i]);
+            }
+            return retVec;
+        }
     }
 }

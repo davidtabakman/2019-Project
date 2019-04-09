@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace Network
 {
+    [Serializable()]
     public class Activation_Function
     {
         public Activation_Function(int ID, Func<double, double> Function, Func<double, double> Derivative)
