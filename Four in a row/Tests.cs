@@ -19,6 +19,8 @@ namespace Helper
 
     class Helper
     {
+        private static Random random = new Random();
+
         public static void Zero(int[,] what)
         {
             for (int x = 0; x < what.GetLength(0); x++)
@@ -26,6 +28,20 @@ namespace Helper
                 for (int y = 0; y < what.GetLength(1); y++)
                 {
                     what[x, y] = 0;
+                }
+            }
+        }
+
+        public static void Zero(List<List<double[]>> what)
+        {
+            for (int i = 0; i < what.Count; i++)
+            {
+                for (int j = 0; j < what[i].Count; j++)
+                {
+                    for (int k = 0; k < what[i][j].Length; k++)
+                    {
+                        what[i][j][k] = 0;
+                    }
                 }
             }
         }
@@ -127,6 +143,160 @@ namespace Helper
                 retVec[i] = func(to[i]);
             }
             return retVec;
+        }
+
+        public static bool ExistsIn<T>(T[] inWhat, T what) where T : IComparable<T>
+        {
+            foreach (T obj in inWhat)
+            {
+                if (obj.CompareTo(what) == 0)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        public static List<T> RandomSample<T>(List<T> from, int sampleSize)
+        {
+            int counter = 0;
+            int BatchSize = from.Count;
+            int[] indexes = new int[Math.Min(BatchSize, sampleSize)];
+            for (int i = 0; i < indexes.Length; i++)
+            {
+                indexes[i] = -1;
+            }
+            while (counter < sampleSize && counter < BatchSize)
+            {
+                int index = random.Next(BatchSize);
+                while (ExistsIn(indexes, index))
+                    index = random.Next(BatchSize);
+                indexes[counter] = index;
+                counter++;
+            }
+            List<T> Sample = new List<T>();
+            foreach(int index in indexes)
+            {
+                Sample.Add(from[index]);
+            }
+            return Sample;
+        }
+
+        public static T[] Flatten<T>(T[,] what)
+        {
+            int x_len = what.GetLength(0);
+            int y_len = what.GetLength(1);
+            T[] Flattened = new T[x_len * y_len];
+            
+            for (int x = 0; x < x_len; x++)
+            {
+                for(int y = 0; y < y_len; y++)
+                {
+                    Flattened[x * x_len + y] = what[x, y];
+                }
+            }
+
+            return Flattened;
+        }
+
+        public static int MaxArg<T>(T[] inWhat) where T : IComparable<T>
+        {
+            int maxArg = 0;
+            for(int arg = 0; arg < inWhat.Length; arg++)
+            {
+                if(maxArg.CompareTo(arg) < 0)
+                {
+                    maxArg = arg;
+                }
+            }
+            return maxArg;
+        }
+
+        public static T Max<T>(T[] inWhat) where T : IComparable<T>
+        {
+            int maxArg = 0;
+            for (int arg = 0; arg < inWhat.Length; arg++)
+            {
+                if (maxArg.CompareTo(arg) < 0)
+                {
+                    maxArg = arg;
+                }
+            }
+            return inWhat[maxArg];
+        }
+
+        public static void ScalarAdd(double[] toWhat, double what)
+        {
+
+            for(int i = 0; i < toWhat.Length; i++)
+            {
+                toWhat[i] += what;
+            }
+            
+        }
+
+        public static void ScalarDivide(double[] what, double by)
+        {
+
+            for (int i = 0; i < what.Length; i++)
+            {
+                what[i] /= by;
+            }
+            
+        }
+
+        public static void ScalarAdd(List<List<double[]>> toWhat, double what)
+        {
+
+            for (int i = 0; i < toWhat.Count; i++)
+            {
+                for (int j = 0; j < toWhat[i].Count; j++)
+                {
+                    ScalarAdd(toWhat[i][j], what);
+                }
+            }
+
+        }
+
+        public static void ScalarDivide(List<List<double[]>> toWhat, double what)
+        {
+
+            for (int i = 0; i < toWhat.Count; i++)
+            {
+                for (int j = 0; j < toWhat[i].Count; j++)
+                {
+                    ScalarDivide(toWhat[i][j], what);
+                }
+            }
+
+        }
+
+        public static void Add(List<List<double[]>> toWhat, List<List<double[]>> what)
+        {
+            for (int i = 0; i < toWhat.Count; i++)
+            {
+                for (int j = 0; j < toWhat[i].Count; j++)
+                {
+                    for( int k = 0; k < toWhat[i][j].Length; k++)
+                    {
+                        toWhat[i][j][k] += what[i][j][k];
+                    }
+                }
+            }
+        }
+
+        public static void Sub(List<List<double[]>> from, List<List<double[]>> what)
+        {
+            for (int i = 0; i < from.Count; i++)
+            {
+                for (int j = 0; j < from[i].Count; j++)
+                {
+                    for (int k = 0; k < from[i][j].Length; k++)
+                    {
+                        from[i][j][k] -= what[i][j][k];
+                    }
+                }
+            }
         }
     }
 }

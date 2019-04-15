@@ -83,6 +83,7 @@ namespace TicTacToe
             RowNum = args[0];
             ColNum = args[1];
             ToWin = args[2];
+            FeatureNum = ColNum * RowNum;
             ActionNum = RowNum * ColNum;
             StateNum = (int)Math.Pow(3, RowNum * ColNum);
             float deltaX = Game1.w_width / ColNum;
@@ -308,7 +309,7 @@ namespace TicTacToe
                     stateID += (int)Tiles[x, y] * (int)Math.Pow(3, (x * 3 + y ));
                 }
             }
-            return new State(stateID);
+            return new State(stateID, Tiles);
         }
 
         public bool NoMovesLeft()

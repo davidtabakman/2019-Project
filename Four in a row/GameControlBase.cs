@@ -22,7 +22,7 @@ namespace Controller
     public class State
     {
         public int ID { get; private set; }
-        public int[,] Board { get; private set; }
+        public double[,] Board { get; private set; }
 
         public State(int ID)
         {
@@ -32,7 +32,7 @@ namespace Controller
 
         public State (GameControlBase.Players[,] board)
         {
-            Board = new int[board.GetLength(0), board.GetLength(1)];
+            Board = new double[board.GetLength(0), board.GetLength(1)];
             for (int x = 0; x < board.GetLength(0); x++)
             {
                 for (int y = 0; y < board.GetLength(1); y++)
@@ -42,6 +42,19 @@ namespace Controller
             }
             ID = -1;
         }
+
+        public State(int ID, GameControlBase.Players[,] board)
+        {
+            Board = new double[board.GetLength(0), board.GetLength(1)];
+            for (int x = 0; x < board.GetLength(0); x++)
+            {
+                for (int y = 0; y < board.GetLength(1); y++)
+                {
+                    Board[x, y] = (int)board[x, y];
+                }
+            }
+            this.ID = ID;
+        }
     }
 
     public abstract class GameControlBase : ControlBase
@@ -49,7 +62,7 @@ namespace Controller
         public enum Players
         {
             Player1 = 1,
-            Player2 = 2,
+            Player2 = -1,
             NoPlayer = 0
         }
 
@@ -61,5 +74,6 @@ namespace Controller
         public abstract bool IsTerminalState();
         public abstract void Clean();
         public abstract Players CheckWin();
+        public int FeatureNum;
     }
 }
