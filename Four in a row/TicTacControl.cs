@@ -34,7 +34,7 @@ namespace TicTacToe
         private void StartBot()
         {
             bot.Setup(this, Players.Player1);
-            bot.Learn(2000000, 0.1f, 0.001f, 0.1f, 0.9f);
+            bot.Learn(200000, 0.05f, 0.0005f, 0.9f, 0.5f);
             Restart();
         }
 
@@ -83,7 +83,7 @@ namespace TicTacToe
             RowNum = args[0];
             ColNum = args[1];
             ToWin = args[2];
-            FeatureNum = ColNum * RowNum;
+            FeatureNum = ColNum * RowNum * 3;
             ActionNum = RowNum * ColNum;
             StateNum = (int)Math.Pow(3, RowNum * ColNum);
             float deltaX = Game1.w_width / ColNum;
@@ -359,17 +359,23 @@ namespace TicTacToe
         }
 
 
-        public override int GetReward(Players forPlayer)
+        public override double GetReward(Players forPlayer)
         {
 
             if (CheckWin() == forPlayer)
             {
-                return 10;
+                return 5;
             }
-            else if (CheckWin() == Players.NoPlayer)
-                return 0;
+            else if (CheckWin() != Players.NoPlayer)
+            {
+                return -5;
+            }
+            else if (IsTerminalState())
+            {
+                return -2.5;
+            }
             else
-                return -10;
+                return 0;
         }
 
         public void RandomAction()
@@ -412,6 +418,28 @@ namespace TicTacToe
             if (Tiles[addX, addY] == Players.NoPlayer)
                 return true;
             return false;
+        }
+
+        public override bool IsTerminalState(State s)
+        {
+            Players[,] tempTiles = new Players[Tiles.GetLength(0), Tiles.GetLength(1)];
+            for(int x = 0; x < Tiles.GetLength(0); x++)
+            {
+                for(int y = 0; y < Tiles.GetLength(1); y++)
+                {
+                    tempTiles[x, y] = Tiles[x, y];
+                }
+            }
+            for (int x = 0; x < Tiles.GetLength(0); x++)
+            {
+                for (int y = 0; y < Tiles.GetLength(1); y++)
+                {
+                    Tiles[x, y] = (Players)s.Board[x, y];
+                }
+            }
+            bool isTerminal = IsTerminalState();
+            Tiles = tempTiles;
+            return isTerminal;
         }
     }
 }

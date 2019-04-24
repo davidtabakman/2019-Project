@@ -28,7 +28,7 @@ namespace Network
             if (Dimensions.Count <= 1)
                 throw new SystemException("Invalid dimensions");
             foreach (int layer in Dimensions)
-                if (layer <= 1)
+                if (layer < 1)
                     throw new SystemException("Invalid dimensions");
 
             // Set the activation function

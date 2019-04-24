@@ -62,16 +62,17 @@ namespace Controller
         public enum Players
         {
             Player1 = 1,
-            Player2 = -1,
+            Player2 = 2,
             NoPlayer = 0
         }
 
         public Players CurrTurn { get; protected set; }
         public abstract State GetState();
-        public abstract int GetReward(Players forPlayer);
+        public abstract double GetReward(Players forPlayer);
         public abstract bool IsLegalAction(Actione action);
         public abstract void DoAction(Actione action);
         public abstract bool IsTerminalState();
+        public abstract bool IsTerminalState(State s);
         public abstract void Clean();
         public abstract Players CheckWin();
         public int FeatureNum;

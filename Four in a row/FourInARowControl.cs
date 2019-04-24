@@ -369,14 +369,14 @@ namespace Four_in_a_row
             return new State(circleList);
         }
 
-        public override int GetReward(Players forPlayer)
+        public override double GetReward(Players forPlayer)
         {
             if (CheckWin() == forPlayer)
-                return 10;
+                return 1;
             else if (CheckWin() == Players.NoPlayer)
                 return 0;
             else
-                return -10;
+                return -1;
         }
 
         public override bool IsLegalAction(Actione action)
@@ -414,6 +414,11 @@ namespace Four_in_a_row
         {
             if (IsTerminalState())
                 Restart(Mode);
+        }
+
+        public override bool IsTerminalState(State s)
+        {
+            throw new NotImplementedException();
         }
     }
 }

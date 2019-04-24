@@ -8,26 +8,28 @@ namespace Learning
     
     public class Q_Learning : LearningBot
     {
-        public float[,] Q_Table { get; private set; }
+        public double[,] Q_Table { get; private set; }
         private int ActionNum;
         private int StateNum;
         private Random rand;
         private GameControlBase Control;
 
-        private void Swap(float[] arr, int i1, int i2)
+        private void Swap(double[] arr, int i1, int i2)
         {
-            float tmp = arr[i1];
+            double tmp = arr[i1];
             arr[i1] = arr[i2];
             arr[i2] = tmp;
         }
 
         private Actione getMaxAction(GameControlBase control, State state)
         {
-            float[] tmp = new float[ActionNum];
-            float[] tmpVals = new float[ActionNum];
+            double[] tmp = new double[ActionNum];
+            double[] tmpVals = new double[ActionNum];
             for (int x = 0; x < ActionNum; x++)
             {
                 tmp[x] = x;
+                if (state.ID < 0)
+                    Console.WriteLine("wtf");
                 tmpVals[x] = Q_Table[state.ID, x];
             }
             // Selection Sort
@@ -75,7 +77,7 @@ namespace Learning
             IsLearning = false;
         }
 
-        public override void Learn(int EpocheNumber, float EpsilonLimit, float EpsilonDecrease, float LearningRate, float DiscountRate, Bot against=null)
+        public override void Learn(int EpocheNumber, double EpsilonLimit, double EpsilonDecrease, double LearningRate, double DiscountRate, Bot against=null)
         {
 
             IsLearning = true;
@@ -83,14 +85,14 @@ namespace Learning
             int current_epoche = 0;
             int last_epcohe = 0;
 
-            float epsilon = 1.0f; // exploration / exploitation
+            double epsilon = 1.0f; // exploration / exploitation
 
             int wins = 0;
 
             // Observe state
             State state = Control.GetState();
             State newState;
-            int reward = 0;
+            double reward = 0;
             Actione action;
             
             while (current_epoche < EpocheNumber && IsLearning)
@@ -132,7 +134,7 @@ namespace Learning
 
                 // Adjust Q-table
                 newState = Control.GetState();
-                float deltaQ;
+                double deltaQ;
                 if (!Control.IsTerminalState())
                     deltaQ = LearningRate * (reward + DiscountRate * Q_Table[newState.ID, getMaxAction(Control, newState).ID] - Q_Table[state.ID, action.ID]);
                 else
@@ -149,7 +151,7 @@ namespace Learning
                 if (current_epoche % 10000 == 0 && current_epoche != last_epcohe)
                 {
                     last_epcohe = current_epoche;
-                    Console.WriteLine("Learning percentage: " + current_epoche / (float)EpocheNumber * 100 + "%, win rate: " + wins * 0.01f + "%");
+                    Console.WriteLine("Learning percentage: " + current_epoche / (double)EpocheNumber * 100 + "%, win rate: " + wins * 0.01f + "%");
                     wins = 0;
                 }
 
@@ -175,7 +177,7 @@ namespace Learning
         public override void Setup(GameControlBase control, GameControlBase.Players player)
         {
             Control = control;
-            Q_Table = new float[control.StateNum, control.ActionNum];
+            Q_Table = new double[control.StateNum, control.ActionNum];
             BotTurn = player;
 
             ActionNum = control.ActionNum;

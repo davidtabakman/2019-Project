@@ -135,7 +135,7 @@ namespace Helper
             return retVec;
         }
 
-        public static double[] ApplyFunciton(double[] to, Func<double, double> func)
+        public static double[] ApplyFunction(double[] to, Func<double, double> func)
         {
             double[] retVec = new double[to.Length];
             for (int i = 0; i < to.Length; i++)
@@ -204,7 +204,7 @@ namespace Helper
             int maxArg = 0;
             for(int arg = 0; arg < inWhat.Length; arg++)
             {
-                if(maxArg.CompareTo(arg) < 0)
+                if(inWhat[maxArg].CompareTo(inWhat[arg]) < 0)
                 {
                     maxArg = arg;
                 }
@@ -217,7 +217,7 @@ namespace Helper
             int maxArg = 0;
             for (int arg = 0; arg < inWhat.Length; arg++)
             {
-                if (maxArg.CompareTo(arg) < 0)
+                if (inWhat[maxArg].CompareTo(inWhat[arg]) < 0)
                 {
                     maxArg = arg;
                 }

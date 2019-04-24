@@ -87,13 +87,6 @@ namespace GameCenter
             EventHandle.InitEventHandle(this);
             random = new Random();
             MainFont = Content.Load<SpriteFont>("Basic");
-            NetworkVectors net1 = new NetworkVectors(new List<int>() { 4, 3, 2 }, 0.5);
-            List<Tuple<double[], double[]>> Data = new List<Tuple<double[], double[]>>();
-            for (int i = 0; i < 1000; i++)
-            {
-                Data.Add(new Tuple<double[], double[]>(new double[] { random.Next(-50, 50), random.Next(-50, 50), random.Next(-50, 50), random.Next(-50, 50) }, new double[] { 0.5, 0.5 }));
-            }
-            net1.SGD(Data, 0.9, 1000);
             NetworkVectors net2 = new NetworkVectors(new List<int>() { 3, 3, 2 }, 1.5);
             NetworkLoader.SaveSerializable(net2, "net2");
             net2 = null;
