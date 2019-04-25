@@ -43,7 +43,6 @@ namespace Learning
         private NetworkVectors OldNeuralNet;
 
         private Random rand;
-        private GameControlBase Control;
         private List<Transition> ReplayMem;
 
         private void BotMove(Bot against)
@@ -84,10 +83,10 @@ namespace Learning
 
             double epsilon = 1.0f; // exploration / exploitation
 
-            int games = 0;
-            int wins = 0;
-            int losses = 0;
-            int draws = 0;
+            games = 0;
+            wins = 0;
+            losses = 0;
+            draws = 0;
 
             // Observe state
             State state = Control.GetState();
@@ -108,41 +107,14 @@ namespace Learning
                 state = Control.GetState();
 
                 // Take action
-                if (rand.NextDouble() <= epsilon)
-                {
-                    action = new Actione(rand.Next(Control.ActionNum));
-                }
-                else
-                {
-                    action = getMaxAction(Control, state);
-                }
-                Control.DoAction(action);
+                action = TakeEpsilonGreedyAction(epsilon, state, rand);
 
-                // Bot takes action if possible (at the moment, the bot is random)
                 if (!Control.IsTerminalState())
                 {
                     BotMove(against);
                 }
-                if (Control.IsTerminalState())
-                {
-                    GameControlBase.Players Winner = Control.CheckWin();
-                    if (Winner == BotTurn)
-                    {
-                        wins++;
-                        games++;
-                    }
-                    else if (Winner == GameControlBase.Players.NoPlayer)
-                    {
-                        draws++;
-                        games++;
-                    }
-                    else
-                    {
-                        games++;
-                        losses++;
-                    }
-                }
 
+                Track();
 
                 // Get reward and observe new state
                 reward = Control.GetReward(BotTurn);
@@ -188,9 +160,6 @@ namespace Learning
                         t = transition.Reward + DiscountRate * OldNeuralNet.WeightedSums[OldNeuralNet.Activations.Count - 1][0];
                     }
 
-                    /*OldNeuralNet.Feed(CreateInputArray(transition.s.Board, transition.a.ID));
-                    OldNeuralNet.WeightedSums[NeuralNet.Activations.Count - 1].CopyTo(Target, 0);
-                    Target[transition.a.ID] += t;*/
                     double[] target = new double[1] { t };
                     Q_Targets.Add(new Tuple<double[], double[]>(CreateInputArray(transition.s.Board, transition.a.ID), ApplyFunction(target, Activation_Functions.Sigmoid.Function)));
                     addLoss += 0.5 * Math.Pow(ApplyFunction(target, Activation_Functions.Sigmoid.Function)[0] - NeuralNet.Activations[NeuralNet.Activations.Count - 1][0], 2);
@@ -224,7 +193,7 @@ namespace Learning
             IsLearning = false;
         }
 
-        private Actione getMaxAction(GameControlBase control, State state)
+        protected override Actione getMaxAction(GameControlBase control, State state)
         {
             int maxID = 0;
             double max = 0;
@@ -240,7 +209,7 @@ namespace Learning
             return new Actione(maxID);
         }
 
-        private Actione getMaxLegalAction(GameControlBase control, State state)
+        protected override Actione getMaxLegalAction(GameControlBase control, State state)
         {
             int maxID = 0;
             double max = 0;
@@ -298,15 +267,5 @@ namespace Learning
            
         }
 
-        public override void Stop()
-        {
-            IsLearning = false;
-        }
-
-        public override void TakeAction(GameControlBase control, State state)
-        {
-            Actione action = getMaxLegalAction(control, state);
-            control.DoAction(action);
-        }
     }
 }

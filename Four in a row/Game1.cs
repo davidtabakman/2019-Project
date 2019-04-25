@@ -30,7 +30,7 @@ namespace GameCenter
             int[] args = { 3, 3, 3 };
             Game1.Screen.SetGUI(PresetGuis.InGame);
             TicTacControl ticTacControl = new TicTacControl();
-            ticTacControl.AttachBot(new DQN());
+            ticTacControl.AttachBot(new Q_Learning());
             Game1.Screen.AddControl(ticTacControl, args);
             Game1.Screen.Start(GraphicsDevice);
             return true;

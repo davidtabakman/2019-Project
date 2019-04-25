@@ -12,7 +12,6 @@ namespace Learning
         private int ActionNum;
         private int StateNum;
         private Random rand;
-        private GameControlBase Control;
 
         private void Swap(double[] arr, int i1, int i2)
         {
@@ -21,7 +20,7 @@ namespace Learning
             arr[i2] = tmp;
         }
 
-        private Actione getMaxAction(GameControlBase control, State state)
+        protected override Actione getMaxLegalAction(GameControlBase control, State state)
         {
             double[] tmp = new double[ActionNum];
             double[] tmpVals = new double[ActionNum];
@@ -55,6 +54,33 @@ namespace Learning
             
         }
 
+        protected override Actione getMaxAction(GameControlBase control, State state)
+        {
+            double[] tmp = new double[ActionNum];
+            double[] tmpVals = new double[ActionNum];
+            for (int x = 0; x < ActionNum; x++)
+            {
+                tmp[x] = x;
+                if (state.ID < 0)
+                    Console.WriteLine("wtf");
+                tmpVals[x] = Q_Table[state.ID, x];
+            }
+            // Selection Sort
+            for (int i = 0; i < ActionNum; i++)
+            {
+                for (int i2 = i; i2 < ActionNum; i2++)
+                {
+                    if (tmpVals[i2] > tmpVals[i])
+                    {
+                        Swap(tmp, i, i2);
+                        Swap(tmpVals, i, i2);
+                    }
+                }
+            }
+            return new Actione((int) tmp[0]);
+
+        }
+
         private void BotMove(Bot against)
         {
             Actione botAction;
@@ -72,11 +98,6 @@ namespace Learning
             }
         }
 
-        public override void Stop()
-        {
-            IsLearning = false;
-        }
-
         public override void Learn(int EpocheNumber, double EpsilonLimit, double EpsilonDecrease, double LearningRate, double DiscountRate, Bot against=null)
         {
 
@@ -87,7 +108,10 @@ namespace Learning
 
             double epsilon = 1.0f; // exploration / exploitation
 
-            int wins = 0;
+            games = 0;
+            wins = 0;
+            losses = 0;
+            draws = 0;
 
             // Observe state
             State state = Control.GetState();
@@ -104,30 +128,16 @@ namespace Learning
                 }
                 // Observe state
                 state = Control.GetState();
-                
+
                 // Take action
-                if (rand.NextDouble() <= epsilon)
-                {
-                    action = new Actione(rand.Next(Control.ActionNum));
-                    while (!Control.IsLegalAction(action))
-                        action = new Actione(rand.Next(Control.ActionNum));
-                }
-                else
-                {
-                    action = getMaxAction(Control, state);
-                }
-                Control.DoAction(action);
+                action = TakeEpsilonGreedyAction(epsilon, state, rand);
 
                 // Bot takes action if possible (at the moment, the bot is random)
                 if (!Control.IsTerminalState()) {
                     BotMove(against);
-                } else
-                {
-                    if (Control.CheckWin() == BotTurn)
-                    {
-                        wins++;
-                    }
                 }
+                Track();
+
 
                 // Get reward
                 reward = Control.GetReward(BotTurn);
@@ -136,7 +146,7 @@ namespace Learning
                 newState = Control.GetState();
                 double deltaQ;
                 if (!Control.IsTerminalState())
-                    deltaQ = LearningRate * (reward + DiscountRate * Q_Table[newState.ID, getMaxAction(Control, newState).ID] - Q_Table[state.ID, action.ID]);
+                    deltaQ = LearningRate * (reward + DiscountRate * Q_Table[newState.ID, getMaxLegalAction(Control, newState).ID] - Q_Table[state.ID, action.ID]);
                 else
                 {
                     deltaQ = LearningRate * (reward - Q_Table[state.ID, action.ID]);
@@ -151,8 +161,11 @@ namespace Learning
                 if (current_epoche % 10000 == 0 && current_epoche != last_epcohe)
                 {
                     last_epcohe = current_epoche;
-                    Console.WriteLine("Learning percentage: " + current_epoche / (double)EpocheNumber * 100 + "%, win rate: " + wins * 0.01f + "%");
+                    Console.WriteLine("Learning percentage: {0}%, win rate: {1}%, loss rate: {2}%, draw rate: {3}%", current_epoche / (double)EpocheNumber * 100, (double)wins * 100 / games, (double)losses * 100 / games, (double)draws * 100 / games);
                     wins = 0;
+                    draws = 0;
+                    losses = 0;
+                    games = 0;
                 }
 
                 // Make the control ready for another move
@@ -184,11 +197,6 @@ namespace Learning
             StateNum = control.StateNum;
         }
 
-        public override void TakeAction(GameControlBase control, State state)
-        {
-            Actione action = getMaxAction(control, state);
-            control.DoAction(action);
-        }
 
     }
 }
