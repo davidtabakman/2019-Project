@@ -4,11 +4,10 @@ namespace Learning
 {
     public abstract class Bot
     {
-        protected abstract Actione getMaxLegalAction(GameControlBase control, State state);
-        protected abstract Actione getMaxAction(GameControlBase control, State state);
+        protected abstract Actione getMaxAction(GameControlBase control, State state, bool isLegal);
         public void TakeAction(GameControlBase control, State state)
         {
-            Actione action = getMaxLegalAction(control, state);
+            Actione action = getMaxAction(control, state, true);
             control.DoAction(action);
         }
     }
@@ -67,7 +66,7 @@ namespace Learning
             }
             else
             {
-                action = getMaxAction(Control, state);
+                action = getMaxAction(Control, state, false);
             }
             Control.DoAction(action);
 

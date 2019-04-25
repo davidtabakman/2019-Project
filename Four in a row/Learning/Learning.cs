@@ -20,7 +20,7 @@ namespace Learning
             arr[i2] = tmp;
         }
 
-        protected override Actione getMaxLegalAction(GameControlBase control, State state)
+        protected override Actione getMaxAction(GameControlBase control, State state, bool isLegal)
         {
             double[] tmp = new double[ActionNum];
             double[] tmpVals = new double[ActionNum];
@@ -43,42 +43,20 @@ namespace Learning
                     }
                 }
             }
-            
-            for (int i = 0; i < ActionNum; i++)
-            {
-                if (control.IsLegalAction(new Actione((int)tmp[i])))
-                    return new Actione((int)tmp[i]);
-            }
 
-            return null;
-            
-        }
-
-        protected override Actione getMaxAction(GameControlBase control, State state)
-        {
-            double[] tmp = new double[ActionNum];
-            double[] tmpVals = new double[ActionNum];
-            for (int x = 0; x < ActionNum; x++)
+            if (isLegal)
             {
-                tmp[x] = x;
-                if (state.ID < 0)
-                    Console.WriteLine("wtf");
-                tmpVals[x] = Q_Table[state.ID, x];
-            }
-            // Selection Sort
-            for (int i = 0; i < ActionNum; i++)
-            {
-                for (int i2 = i; i2 < ActionNum; i2++)
+                for (int i = 0; i < ActionNum; i++)
                 {
-                    if (tmpVals[i2] > tmpVals[i])
-                    {
-                        Swap(tmp, i, i2);
-                        Swap(tmpVals, i, i2);
-                    }
+                    if (control.IsLegalAction(new Actione((int)tmp[i])))
+                        return new Actione((int)tmp[i]);
                 }
-            }
-            return new Actione((int) tmp[0]);
 
+                return null;
+            } else
+            {
+                return new Actione((int)tmp[0]);
+            }
         }
 
         private void BotMove(Bot against)
@@ -146,7 +124,7 @@ namespace Learning
                 newState = Control.GetState();
                 double deltaQ;
                 if (!Control.IsTerminalState())
-                    deltaQ = LearningRate * (reward + DiscountRate * Q_Table[newState.ID, getMaxLegalAction(Control, newState).ID] - Q_Table[state.ID, action.ID]);
+                    deltaQ = LearningRate * (reward + DiscountRate * Q_Table[newState.ID, getMaxAction(Control, newState, true).ID] - Q_Table[state.ID, action.ID]);
                 else
                 {
                     deltaQ = LearningRate * (reward - Q_Table[state.ID, action.ID]);

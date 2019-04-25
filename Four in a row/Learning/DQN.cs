@@ -147,7 +147,7 @@ namespace Learning
                 double addLoss = 0;
                 foreach (Transition transition in miniBatch)
                 {
-                    int maxID = getMaxAction(Control, transition.s1).ID;
+                    int maxID = getMaxAction(Control, transition.s1, false).ID;
                     OldNeuralNet.Feed(CreateInputArray(transition.s1.Board, maxID));
 
                     double t = 0;
@@ -193,34 +193,30 @@ namespace Learning
             IsLearning = false;
         }
 
-        protected override Actione getMaxAction(GameControlBase control, State state)
+        protected override Actione getMaxAction(GameControlBase control, State state, bool isLegal)
         {
             int maxID = 0;
             double max = 0;
             for (int id = 0; id < control.ActionNum; id++)
             {
                 NeuralNet.Feed(CreateInputArray(state.Board, id));
-                if (NeuralNet.Activations[NeuralNet.Activations.Count - 1][0] > max)
-                {
-                    maxID = id;
-                    max = NeuralNet.Activations[NeuralNet.Activations.Count - 1][0];
-                }
-            }
-            return new Actione(maxID);
-        }
-
-        protected override Actione getMaxLegalAction(GameControlBase control, State state)
-        {
-            int maxID = 0;
-            double max = 0;
-            for (int id = 0; id < control.ActionNum; id++)
-            {
-                NeuralNet.Feed(CreateInputArray(state.Board, id));
-                if (NeuralNet.Activations[NeuralNet.Activations.Count - 1][0] > max && control.IsLegalAction(new Actione(id)))
-                {
-                    maxID = id;
-                    max = NeuralNet.Activations[NeuralNet.Activations.Count - 1][0];
-                }
+                
+                    if (NeuralNet.Activations[NeuralNet.Activations.Count - 1][0] > max)
+                    { 
+                        if (isLegal)
+                        {
+                            if(control.IsLegalAction(new Actione(id)))
+                            {
+                                maxID = id;
+                                max = NeuralNet.Activations[NeuralNet.Activations.Count - 1][0];
+                            }
+                        } else
+                        {
+                            maxID = id;
+                            max = NeuralNet.Activations[NeuralNet.Activations.Count - 1][0];
+                        }
+                    }
+                
             }
             return new Actione(maxID);
         }
