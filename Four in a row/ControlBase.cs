@@ -12,13 +12,21 @@ namespace Controller
     public abstract class ControlBase
     {
         public bool Running;
+        public bool IsLearnable { get; protected set; }
         public int StateNum { get; protected set; }
         public int ActionNum { get; protected set; }
+        public int ClickPriority { get; set; }
+
+        public ControlBase(int ClickPriority)
+        {
+            IsLearnable = false;
+            this.ClickPriority = ClickPriority;
+        }
 
         public abstract void Update(GameTime gameTime);
         public abstract void Draw(SpriteBatch spriteBatch);
         public abstract void Start(GraphicsDevice gd, int[] args);
-        public abstract void HandleClick(Vector2 position);
+        public abstract bool HandleClick(Vector2 position);
         public abstract void Clear();
     }
 }

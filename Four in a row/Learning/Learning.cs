@@ -1,11 +1,12 @@
 ﻿using Controller;
 using System;
+using System.Runtime.Serialization;
 using System.Threading;
 
 namespace Learning
 {
-    
-    
+
+    [Serializable()]
     public class Q_Learning : LearningBot
     {
         public double[,] Q_Table { get; private set; }
@@ -157,24 +158,36 @@ namespace Learning
         /// Fuction will create a Q-Learning bot that uses a regular Q-function value table
         /// </summary>
         /// <param name="control">The game that is to be learned, bot attaches to it</param>
-        public Q_Learning()
+        public Q_Learning() : base()
         {
-            
             rand = new Random();
-            
-            IsLearning = false;
         }
 
         public override void Setup(GameControlBase control, GameControlBase.Players player)
         {
+            base.Setup(control, player);
             Control = control;
-            Q_Table = new double[control.StateNum, control.ActionNum];
+            if (Q_Table == null) 
+                Q_Table = new double[control.StateNum, control.ActionNum];
             BotTurn = player;
 
             ActionNum = control.ActionNum;
             StateNum = control.StateNum;
         }
 
+        public override void GetObjectData(SerializationInfo info, StreamingContext context)
+        {
+            info.AddValue("Q_Table", Q_Table);
+            info.AddValue("Control", Control);
+            info.AddValue("Player", BotTurn);
+        }
 
+        public Q_Learning(SerializationInfo info, StreamingContext context)
+        {
+            Q_Table = (double[,])info.GetValue("Q_Table", typeof(double[,]));
+            Control = (GameControlBase)info.GetValue("Control", typeof(GameControlBase));
+            BotTurn = (GameControlBase.Players)info.GetValue("Player", typeof(GameControlBase.Players));
+            Setup(Control, BotTurn);
+        }
     }
 }

@@ -19,7 +19,7 @@ namespace GUI
 
         public abstract void Draw(SpriteBatch sb);
         public abstract void Move();
-        public abstract void ClickedOn(Vector2 position);
+        public abstract bool ClickedOn(Vector2 position);
         public abstract void Dispose();
     }
 
@@ -62,14 +62,17 @@ namespace GUI
             throw new System.NotImplementedException();
         }
 
-        public override void ClickedOn(Vector2 position)
+        public override bool ClickedOn(Vector2 position)
         {
             if (IsVisible)
                 if (Bounds.Contains(new Point((int)position.X, (int)position.Y)))
                 {
                     buttonAction();
+                    return true;
                 }
+            return false;
         }
+
 
         public override void Dispose()
         {

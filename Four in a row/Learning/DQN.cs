@@ -2,10 +2,12 @@
 using Network;
 using System;
 using System.Collections.Generic;
+using System.Runtime.Serialization;
 using static Helper.Helper;
 
 namespace Learning
 {
+    [Serializable()]
     public class DQN : LearningBot
     {
         private static List<int> Dimensions = new List<int> { 4, 3, 2 };
@@ -44,6 +46,11 @@ namespace Learning
 
         private Random rand;
         private List<Transition> ReplayMem;
+
+        public DQN() : base()
+        {
+
+        }
 
         private void BotMove(Bot against)
         {
@@ -252,10 +259,12 @@ namespace Learning
 
         public override void Setup(GameControlBase control, GameControlBase.Players player)
         {
+            base.Setup(control, player);
             // Create a new neural network with some dimensions defined before
             rand = new Random();
             Dimensions = new List<int> { control.FeatureNum + control.ActionNum, 28, 17, 1 };
-            NeuralNet = new NetworkVectors(Dimensions, 0.1);
+            if(NeuralNet == null)
+                NeuralNet = new NetworkVectors(Dimensions, 0.1);
             OldNeuralNet = (NetworkVectors)NeuralNet.Clone();
             Control = control;
             BotTurn = player;
@@ -263,5 +272,26 @@ namespace Learning
            
         }
 
+        public void SetNetwork(NetworkVectors newNet)
+        {
+            NeuralNet = newNet;
+        }
+
+        public NetworkVectors GetNetwork()
+        {
+            return NeuralNet;
+        }
+
+        public override void GetObjectData(SerializationInfo info, StreamingContext context)
+        {
+            info.AddValue("Network", NeuralNet);
+            info.AddValue("Player", BotTurn);
+        }
+
+        public DQN(SerializationInfo info, StreamingContext context)
+        {
+            NeuralNet = (NetworkVectors)info.GetValue("Network", typeof(NetworkVectors));
+            BotTurn = (GameControlBase.Players)info.GetValue("Player", typeof(GameControlBase.Players));
+        }
     }
 }

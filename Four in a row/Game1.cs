@@ -13,14 +13,21 @@ using Network;
 
 namespace GameCenter
 {
- 
+    public enum Priorities
+    {
+        GUI = 1,
+        Game = 2
+    }
+
     public class Commands
     {
+        const string NET_SAVE_NAME = "net1";
+
         public static bool StartFourInARow(GraphicsDevice GraphicsDevice)
         {
             int[] args = { 7, 6, 1 };
             Game1.Screen.SetGUI(PresetGuis.InGame);
-            Game1.Screen.AddControl(new FourInARowControl(), args);
+            Game1.Screen.AddControl(new FourInARowControl((int)Priorities.Game), args);
             Game1.Screen.Start(GraphicsDevice);
             return true;
         }
@@ -29,8 +36,8 @@ namespace GameCenter
         {
             int[] args = { 3, 3, 3 };
             Game1.Screen.SetGUI(PresetGuis.InGame);
-            TicTacControl ticTacControl = new TicTacControl();
-            ticTacControl.AttachBot(new Q_Learning());
+            TicTacControl ticTacControl = new TicTacControl((int)Priorities.Game);
+            ticTacControl.AttachBot(new DQN());
             Game1.Screen.AddControl(ticTacControl, args);
             Game1.Screen.Start(GraphicsDevice);
             return true;
@@ -42,6 +49,65 @@ namespace GameCenter
             Game1.Screen.SetGUI(PresetGuis.Menu);
             return true;
         }
+
+        public static bool StartLearn()
+        {
+            foreach(ControlBase control in Game1.Screen.controls.Keys)
+            {
+                if (control.IsLearnable)
+                {
+                    GameControlBase CastControl = (GameControlBase)control;
+                    CastControl.StartLearn();
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        public static bool StopLearn()
+        {
+            foreach (ControlBase control in Game1.Screen.controls.Keys)
+            {
+                if (control.IsLearnable)
+                {
+                    GameControlBase CastControl = (GameControlBase)control;
+                    CastControl.StopLearn();
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        public static bool LoadBot()
+        {
+            foreach (ControlBase control in Game1.Screen.controls.Keys)
+            {
+                if (control.IsLearnable)
+                {
+                    GameControlBase CastControl = (GameControlBase)control;
+                    LearningBot bot = NetworkLoader.LoadLearningBot(NET_SAVE_NAME);
+                    bot.Setup(CastControl, bot.BotTurn);
+                    CastControl.SetBot(bot);
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        public static bool SaveBot()
+        {
+            foreach (ControlBase control in Game1.Screen.controls.Keys)
+            {
+                if (control.IsLearnable)
+                {
+                    GameControlBase CastControl = (GameControlBase)control;
+                    LearningBot bot = CastControl.GetBot();
+                    NetworkLoader.SaveLearningBot(NET_SAVE_NAME, bot);
+                    return true;
+                }
+            }
+            return false;
+        }
     }
     /// <summary>
     /// This is the main type for your game.
@@ -49,6 +115,8 @@ namespace GameCenter
     public class Game1 : Game
     {
         // Constatnts
+        
+
         // Window size constansts (static)
         public const int w_width = 1000;
         public const int w_height = 1000;

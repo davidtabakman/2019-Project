@@ -12,6 +12,10 @@ namespace Four_in_a_row
     public class FourInARowControl : GameControlBase
     {
 
+        public FourInARowControl(int ClickPriority) : base(ClickPriority)
+        {
+        }
+
         // Game modes
         enum Modes
         {
@@ -103,16 +107,22 @@ namespace Four_in_a_row
         //Initialize the player-to-color dictionary
         private void PlayerToColorInit()
         {
-            PlayerColor = new Dictionary<Players, Color>();
-            PlayerColor[Players.Player1] = Color.Yellow;
-            PlayerColor[Players.Player2] = Color.Red;
+            PlayerColor = new Dictionary<Players, Color>
+            {
+                [Players.Player1] = Color.Yellow,
+                [Players.Player2] = Color.Red
+            };
         }
 
         // Function called on left click release
-        public override void HandleClick(Vector2 position)
+        public override bool HandleClick(Vector2 position)
         {
             if (Mode != Modes.Learning)
+            {
                 AddCircle(position);
+                return true;
+            }
+            return false;
         }
 
         public override void Update(GameTime gameTime)
@@ -417,6 +427,26 @@ namespace Four_in_a_row
         }
 
         public override bool IsTerminalState(State s)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void StartLearn()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void StopLearn()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void SetBot(LearningBot bot)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override LearningBot GetBot()
         {
             throw new NotImplementedException();
         }

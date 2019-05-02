@@ -12,9 +12,9 @@ namespace GUI
     {
         private static GraphicsDevice gd { get; set; }
 
-        public static GUIControl Menu = new GUIControl();
+        public static GUIControl Menu = new GUIControl((int)Priorities.GUI);
 
-        public static GUIControl InGame = new GUIControl();
+        public static GUIControl InGame = new GUIControl((int)Priorities.GUI);
 
         private static void SetupMenu()
         {
@@ -25,9 +25,13 @@ namespace GUI
 
         private static void SetupInGame()
         {
-            InGame = new GUIControl();
+            InGame = new GUIControl((int)Priorities.GUI);
             InGame.Start(gd, new int[] { });
             InGame.AddButton(gd, new Rectangle(0, Game1.w_height - 25, 120, 25), "Exit", Color.Gray, "Exit", new Func<bool>(() => Commands.OnPressExit()));
+            InGame.AddButton(gd, new Rectangle(130, Game1.w_height - 25, 120, 25), "Start Learning", Color.Gray, "Learn", new Func<bool>(() => Commands.StartLearn()));
+            InGame.AddButton(gd, new Rectangle(260, Game1.w_height - 25, 120, 25), "Stop Learning", Color.Gray, "Stop", new Func<bool>(() => Commands.StopLearn()));
+            InGame.AddButton(gd, new Rectangle(390, Game1.w_height - 25, 120, 25), "Save the bot", Color.Gray, "Save", new Func<bool>(() => Commands.SaveBot()));
+            InGame.AddButton(gd, new Rectangle(520, Game1.w_height - 25, 120, 25), "Load the bot", Color.Gray, "Load", new Func<bool>(() => Commands.LoadBot()));
         }
 
         public static void Setup(GraphicsDevice graphics)
@@ -46,6 +50,11 @@ namespace GUI
         public LinkedList<GUIBase> GUIList;
         public Dictionary<string, int> GUIIDs;
         private int CountItems;
+
+        public GUIControl(int ClickPriority) : base(ClickPriority)
+        {
+
+        }
 
         public override void Start(GraphicsDevice gd, int[] args)
         {
@@ -100,7 +109,7 @@ namespace GUI
             GUIIDs.Clear();
         }
 
-        public override void HandleClick(Vector2 Position)
+        public override bool HandleClick(Vector2 Position)
         {
             if (Game1.Screen.GetGUI().GUIList.Count > 0)
             {
@@ -109,10 +118,12 @@ namespace GUI
                 while (currNode != null)
                 {
                     nextNode = currNode.Next;
-                    currNode.Value.ClickedOn(Position);
+                    if (currNode.Value.ClickedOn(Position))
+                        return true;
                     currNode = nextNode;
                 }
             }
+            return false;
         }
     }
 }

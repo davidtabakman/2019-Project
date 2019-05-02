@@ -9,7 +9,7 @@ namespace Network
 {
     public class NetworkLoader
     {
-        private const string NetworkFileExtention = ".dtp";
+        private const string FileExtention = ".dtp";
 
         /// <summary>
         /// Saves a neural network with a given name as a .dtp file.
@@ -19,7 +19,7 @@ namespace Network
         public static void SaveNetwork(Network net, string NetName)
         {
             // Creates a header of this shape (string): ActivationFuncID FirstLayerNeuronNum SecondLayerNeuronNum ... LastLayerNeuronNum
-            NetName += NetworkFileExtention;
+            NetName += FileExtention;
             string header = "";
             header += net.Activation.ID;
             header += " ";
@@ -68,7 +68,7 @@ namespace Network
         /// <returns>The neural network</returns>
         public static Network LoadNetwork(string NetName)
         {
-            NetName += NetworkFileExtention;
+            NetName += FileExtention;
             try
             {
                 StreamReader r = File.OpenText(NetName);
@@ -145,7 +145,7 @@ namespace Network
 
         public static void SaveSerializable(NetworkVectors net, string NetName)
         {
-            string path = NetName + NetworkFileExtention;
+            string path = NetName + FileExtention;
 
             try
             {
@@ -166,7 +166,7 @@ namespace Network
 
         public static NetworkVectors LoadNetworkVectors(string NetName)
         {
-            string path = NetName + NetworkFileExtention;
+            string path = NetName + FileExtention;
 
             try
             {
@@ -183,6 +183,49 @@ namespace Network
             catch
             {
                 Console.WriteLine("Error saving the serializable object");
+                return null;
+            }
+        }
+
+        public static void SaveLearningBot(string BotName, Learning.LearningBot bot)
+        {
+            string path = BotName + FileExtention;
+
+            try
+            {
+                Stream saveFile = File.Open(path, FileMode.Create);
+
+                BinaryFormatter binaryFormatter = new BinaryFormatter();
+
+                binaryFormatter.Serialize(saveFile, bot);
+
+                saveFile.Close();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Error saving the serializable object: {0}", e.Message);
+            }
+        }
+
+        public static Learning.LearningBot LoadLearningBot(string NetName)
+        {
+            string path = NetName + FileExtention;
+
+            try
+            {
+                Stream saveFile = File.Open(path, FileMode.Open);
+
+                BinaryFormatter binaryFormatter = new BinaryFormatter();
+
+                Learning.LearningBot bot = (Learning.LearningBot)binaryFormatter.Deserialize(saveFile);
+
+                saveFile.Close();
+
+                return bot;
+            }
+            catch
+            {
+                Console.WriteLine("Error loading the serializable object");
                 return null;
             }
         }

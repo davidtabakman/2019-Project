@@ -170,6 +170,7 @@ namespace Network
             info.AddValue("Activation Function", ActivationFunction);
             info.AddValue("Activations", Activations);
             info.AddValue("Weighted Sums", WeightedSums);
+            info.AddValue("Dimensions", Dimensions);
         }
 
         public NetworkVectors(SerializationInfo info, StreamingContext context)
@@ -179,6 +180,7 @@ namespace Network
             ActivationFunction = (Activation_Function)info.GetValue("Activation Function", typeof(Activation_Function));
             Activations = (List<double[]>)info.GetValue("Activations", typeof(List<double[]>));
             WeightedSums = (List<double[]>)info.GetValue("Weighted Sums", typeof(List<double[]>));
+            Dimensions = (List<int>)info.GetValue("Dimensions", typeof(List<int>));
         }
 
         public object Clone()

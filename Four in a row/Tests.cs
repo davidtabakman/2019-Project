@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Learning;
 using System.Diagnostics;
 using Microsoft.Xna.Framework;
+using Controller;
 
 namespace Helper
 {
@@ -298,5 +299,14 @@ namespace Helper
                 }
             }
         }
+
+        public class ByPriority : IComparer<ControlBase>
+        {
+            public int Compare(ControlBase x, ControlBase y)
+            {
+                return x.ClickPriority.CompareTo(y.ClickPriority);
+            }
+        }
+
     }
 }

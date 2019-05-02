@@ -65,8 +65,16 @@ namespace Controller
             Player2 = 2,
             NoPlayer = 0
         }
+        
 
+        public GameControlBase(int ClickPriority) : base(ClickPriority)
+        {
+            IsLearnable = true;
+        }
+        
         public Players CurrTurn { get; protected set; }
+        public abstract void StartLearn();
+        public abstract void StopLearn();
         public abstract State GetState();
         public abstract double GetReward(Players forPlayer);
         public abstract bool IsLegalAction(Actione action);
@@ -76,5 +84,7 @@ namespace Controller
         public abstract void Clean();
         public abstract Players CheckWin();
         public int FeatureNum;
+        public abstract void SetBot(LearningBot bot);
+        public abstract LearningBot GetBot();
     }
 }

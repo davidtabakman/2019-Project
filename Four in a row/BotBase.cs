@@ -1,4 +1,5 @@
 ﻿using Controller;
+using System.Runtime.Serialization;
 
 namespace Learning
 {
@@ -12,15 +13,26 @@ namespace Learning
         }
     }
 
-    public abstract class LearningBot : Bot
+    public abstract class LearningBot : Bot, ISerializable
     {
         
 
         public abstract void Learn(int EpocheNumber, double EpsilonLimit, double EpsilonDecrease, double LearningRate, double DiscountRate, Bot against = null);
-        public abstract void Setup(GameControlBase control, GameControlBase.Players player);
         public GameControlBase.Players BotTurn { get; protected set; }
         public bool IsLearning { get; protected set; }
         protected GameControlBase Control;
+        public bool IsSetup { get; protected set; }
+
+        public LearningBot()
+        {
+            IsSetup = false;
+            IsLearning = false;
+        }
+
+        public virtual void Setup(GameControlBase control, GameControlBase.Players player)
+        {
+            IsSetup = true;
+        }
 
         public void Stop()
         {
@@ -73,5 +85,7 @@ namespace Learning
             
             return action;
         }
+
+        public abstract void GetObjectData(SerializationInfo info, StreamingContext context);
     }
 }

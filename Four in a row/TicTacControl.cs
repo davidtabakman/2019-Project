@@ -21,7 +21,7 @@ namespace TicTacToe
         private int ToWin;
         private LearningBot bot;
 
-        public TicTacControl()
+        public TicTacControl(int ClickPriority) : base(ClickPriority)
         {
             
         }
@@ -33,7 +33,8 @@ namespace TicTacToe
 
         private void StartBot()
         {
-            bot.Setup(this, Players.Player1);
+            if (!bot.IsSetup)        
+                bot.Setup(this, Players.Player1);
             bot.Learn(200000, 0.05f, 0.0005f, 0.9f, 0.5f);
             Restart();
         }
@@ -102,10 +103,6 @@ namespace TicTacToe
             
             Running = true;
             CurrTurn = Players.Player1;
-
-            Thread thread = new Thread(
-            new ThreadStart(StartBot));
-            thread.Start();
         }
 
         private Texture2D CreateBoard(GraphicsDevice gd)
@@ -176,10 +173,10 @@ namespace TicTacToe
             Clean();
         }
 
-        public override void HandleClick(Vector2 position)
+        public override bool HandleClick(Vector2 position)
         {
             if (bot != null && bot.IsLearning)
-                return;
+                return false;
             AddObject(position);
             if (IsTerminalState())
                 Clean();
@@ -187,6 +184,7 @@ namespace TicTacToe
                 bot.TakeAction(this, GetState());
             if (IsTerminalState())
                 Clean();
+            return true;
         }
 
         public override Players CheckWin()
@@ -440,6 +438,36 @@ namespace TicTacToe
             bool isTerminal = IsTerminalState();
             Tiles = tempTiles;
             return isTerminal;
+        }
+
+        public override void StartLearn()
+        {
+            if (!bot.IsLearning)
+            {
+                Restart();
+                Thread thread = new Thread(
+                new ThreadStart(StartBot));
+                thread.Start();
+            }
+        }
+
+        public override void StopLearn()
+        {
+            if (bot.IsLearning)
+            {
+                bot.Stop();
+                Restart();
+            }
+        }
+
+        public override void SetBot(LearningBot bot)
+        {
+            this.bot = bot;
+        }
+
+        public override LearningBot GetBot()
+        {
+            return bot;
         }
     }
 }
