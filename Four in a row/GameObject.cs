@@ -12,6 +12,8 @@ namespace Four_in_a_row
         public Vector2 Speed { get; set; }
         public Rectangle Bounds { get; set; }
         public bool Frozen { get; set; }
+        public bool IsVisible { get; set; }
+        public Color Color { get; set; }
 
         public GameObject(Rectangle Bounds)
         {
@@ -81,6 +83,11 @@ namespace Four_in_a_row
         public virtual bool isDrawable()
         {
             return false;
+        }
+
+        public virtual void Dispose()
+        {
+
         }
 
     }

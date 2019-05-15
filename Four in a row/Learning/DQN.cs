@@ -12,6 +12,7 @@ namespace Learning
     {
         private static List<int> Dimensions = new List<int> { 4, 3, 2 };
         private const int ReplayMemSize = 10000;
+        private double Epsilon;
 
         private struct Transition
         {
@@ -88,8 +89,6 @@ namespace Learning
                     Gradients[Gradients.Count - 1].Add(CreateInitArray(Dimensions[layer - 1], 0));
             }
 
-            double epsilon = 1.0f; // exploration / exploitation
-
             games = 0;
             wins = 0;
             losses = 0;
@@ -114,7 +113,7 @@ namespace Learning
                 state = Control.GetState();
 
                 // Take action
-                action = TakeEpsilonGreedyAction(epsilon, state, rand);
+                action = TakeEpsilonGreedyAction(Epsilon, state, rand);
 
                 if (!Control.IsTerminalState())
                 {
@@ -178,8 +177,8 @@ namespace Learning
                 NeuralNet.SGD(Q_Targets, LearningRate, 1);
 
                 // Adjust learning variables
-                if (epsilon > EpsilonLimit)
-                    epsilon -= EpsilonDecrease;
+                if (Epsilon > EpsilonLimit)
+                    Epsilon -= EpsilonDecrease;
 
                 if (current_epoche % 1000 == 0 && current_epoche != last_epcohe)
                 {
@@ -246,11 +245,11 @@ namespace Learning
                 for (int y = 0; y < y_len; y++)
                 {
                     if (board[x, y] == (int)GameControlBase.Players.Player1)
-                        Input[(x * x_len + y) * 3] = 1;
+                        Input[(x * y_len + y) * 3] = 1;
                     else if(board[x, y] == (int)GameControlBase.Players.Player2)
-                        Input[(x * x_len + y) * 3 + 1] = 1;
+                        Input[(x * y_len + y) * 3 + 1] = 1;
                     else
-                        Input[(x * x_len + y) * 3 + 2] = 1;
+                        Input[(x * y_len + y) * 3 + 2] = 1;
                 }
             }
 
@@ -262,14 +261,14 @@ namespace Learning
             base.Setup(control, player);
             // Create a new neural network with some dimensions defined before
             rand = new Random();
-            Dimensions = new List<int> { control.FeatureNum + control.ActionNum, 28, 17, 1 };
+            Dimensions = new List<int> { control.FeatureNum + control.ActionNum, 70, 30, 1 };
             if(NeuralNet == null)
                 NeuralNet = new NetworkVectors(Dimensions, 0.1);
             OldNeuralNet = (NetworkVectors)NeuralNet.Clone();
             Control = control;
             BotTurn = player;
             ReplayMem = new List<Transition>();
-           
+            Epsilon = 1;
         }
 
         public void SetNetwork(NetworkVectors newNet)

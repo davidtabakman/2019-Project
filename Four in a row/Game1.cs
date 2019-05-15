@@ -27,7 +27,9 @@ namespace GameCenter
         {
             int[] args = { 7, 6, 1 };
             Game1.Screen.SetGUI(PresetGuis.InGame);
-            Game1.Screen.AddControl(new FourInARowControl((int)Priorities.Game), args);
+            FourInARowControl fourInARowControl = new FourInARowControl((int)Priorities.Game);
+            fourInARowControl.AttachBot(new DQN());
+            Game1.Screen.AddControl(fourInARowControl, args);
             Game1.Screen.Start(GraphicsDevice);
             return true;
         }

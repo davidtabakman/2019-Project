@@ -148,6 +148,10 @@ namespace Learning
                 }
 
                 // Make the control ready for another move
+                while (Control.IsDrawing)
+                {
+
+                }
                 Control.Clean();
 
             }

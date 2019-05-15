@@ -73,6 +73,7 @@ namespace Controller
         }
         
         public Players CurrTurn { get; protected set; }
+        public bool IsDrawing { get; protected set; }
         public abstract void StartLearn();
         public abstract void StopLearn();
         public abstract State GetState();

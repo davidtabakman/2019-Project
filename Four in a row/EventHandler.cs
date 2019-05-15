@@ -28,7 +28,7 @@ namespace Four_in_a_row
             {
                 List<ControlBase> controls = Game1.Screen.controls.Keys.ToList();
                 controls.Sort(ByPriority);
-                foreach (ControlBase control in controls)
+                foreach (var control in controls)
                 {
                     if (control.Running)
                         if (control.HandleClick(eventArgs.Position))

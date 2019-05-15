@@ -24,7 +24,8 @@ namespace Four_in_a_row
 
         public override void Draw(SpriteBatch sb)
         {
-            sb.Draw(Texture, Location, Color.White);
+            if (IsVisible)
+                sb.Draw(Texture, Location, Color);
         }
 
         public override bool isPhysical()
@@ -35,6 +36,11 @@ namespace Four_in_a_row
         public override bool isDrawable()
         {
             return false;
+        }
+
+        public override void Dispose()
+        {
+            Texture.Dispose();
         }
     }
 }
