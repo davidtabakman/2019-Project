@@ -9,11 +9,13 @@ namespace Learning
     [Serializable()]
     public class Q_Learning : LearningBot
     {
-        public double[,] Q_Table { get; private set; }
+        public double[,] Q_Table { get; private set; } // State and action matrix with Q values
         private int ActionNum;
         private int StateNum;
-        private Random rand;
 
+        /// <summary>
+        /// Helper function to swap two array values
+        /// </summary>
         private void Swap(double[] arr, int i1, int i2)
         {
             double tmp = arr[i1];
@@ -21,19 +23,23 @@ namespace Learning
             arr[i2] = tmp;
         }
 
+        /// <summary>
+        /// Go over all actions and return the one with the highest Q value.
+        /// </summary>
+        /// <param name="control"></param>
+        /// <param name="state">The state of control to use.</param>
+        /// <param name="isLegal">If true, the returned action has to be considered legal in the control.</param>
+        /// <returns></returns>
         protected override Actione getMaxAction(GameControlBase control, State state, bool isLegal)
         {
             double[] tmp = new double[ActionNum];
             double[] tmpVals = new double[ActionNum];
-            for (int x = 0; x < ActionNum; x++)
+            for (int x = 0; x < ActionNum; x++) // Fill a temporary array
             {
                 tmp[x] = x;
-                if (state.ID < 0)
-                    Console.WriteLine("wtf");
                 tmpVals[x] = Q_Table[state.ID, x];
             }
-            // Selection Sort
-            for (int i = 0; i < ActionNum; i++)
+            for (int i = 0; i < ActionNum; i++) // Selection Sort
             {
                 for (int i2 = i; i2 < ActionNum; i2++)
                 {
@@ -44,8 +50,7 @@ namespace Learning
                     }
                 }
             }
-
-            if (isLegal)
+            if (isLegal) // Return the best action (first in sorted array), or if it is required to be legal return the first legal action.
             {
                 for (int i = 0; i < ActionNum; i++)
                 {
@@ -60,39 +65,30 @@ namespace Learning
             }
         }
 
-        private void BotMove(Bot against)
-        {
-            Actione botAction;
-            if (!Control.IsTerminalState())
-            {
-                if (against != null)
-                    against.TakeAction(Control, Control.GetState());
-                else
-                {
-                    botAction = new Actione(rand.Next(Control.ActionNum));
-                    while (!Control.IsLegalAction(botAction))
-                        botAction = new Actione(rand.Next(Control.ActionNum));
-                    Control.DoAction(botAction);
-                }
-            }
-        }
-
+        /// <summary>
+        /// Learning using reinforcement learning Q learning, that updates a Q table using the bellman equation.
+        /// </summary>
+        /// <param name="EpocheNumber"></param>
+        /// <param name="EpsilonLimit"></param>
+        /// <param name="EpsilonDecrease">Decrease of epsilon every iteration</param>
+        /// <param name="LearningRate"></param>
+        /// <param name="DiscountRate"></param>
+        /// <param name="against">optional, if not given opponent is random</param>
         public override void Learn(int EpocheNumber, double EpsilonLimit, double EpsilonDecrease, double LearningRate, double DiscountRate, Bot against=null)
         {
-
             IsLearning = true;
-            int epoche_move_limit = 20;
             int current_epoche = 0;
             int last_epcohe = 0;
 
             double epsilon = 1.0f; // exploration / exploitation
 
+            // Tracking variables
             games = 0;
             wins = 0;
             losses = 0;
             draws = 0;
 
-            // Observe state
+            // Observe state and declare learning variables
             State state = Control.GetState();
             State newState;
             double reward = 0;
@@ -101,27 +97,24 @@ namespace Learning
             while (current_epoche < EpocheNumber && IsLearning)
             {
                 
-                if (BotTurn != Control.CurrTurn)
+                if (BotTurn != Control.CurrTurn) // If its not this learningbot's turn in the control
                 {
                     BotMove(against);
                 }
-                // Observe state
-                state = Control.GetState();
+                
+                state = Control.GetState(); // Observe state
 
-                // Take action
-                action = TakeEpsilonGreedyAction(epsilon, state, rand);
+                action = TakeEpsilonGreedyAction(epsilon, state, rand); // Take action
 
-                // Bot takes action if possible (at the moment, the bot is random)
                 if (!Control.IsTerminalState()) {
                     BotMove(against);
                 }
-                Track();
 
+                Track(); // Update the tracking variables according to the current state of the game
 
-                // Get reward
-                reward = Control.GetReward(BotTurn);
+                reward = Control.GetReward(BotTurn); // Get reward
 
-                // Adjust Q-table
+                // Adjust Q-table using the bellman equation: Q += (Q' * DiscountRate + R) * learning rate
                 newState = Control.GetState();
                 double deltaQ;
                 if (!Control.IsTerminalState())
@@ -137,7 +130,7 @@ namespace Learning
                 if (epsilon > EpsilonLimit)
                     epsilon -= EpsilonDecrease;
 
-                if (current_epoche % 10000 == 0 && current_epoche != last_epcohe)
+                if (current_epoche % 10000 == 0 && current_epoche != last_epcohe) // Print retport of the last 10000 iterations
                 {
                     last_epcohe = current_epoche;
                     Console.WriteLine("Learning percentage: {0}%, win rate: {1}%, loss rate: {2}%, draw rate: {3}%", current_epoche / (double)EpocheNumber * 100, (double)wins * 100 / games, (double)losses * 100 / games, (double)draws * 100 / games);
@@ -147,26 +140,26 @@ namespace Learning
                     games = 0;
                 }
 
-                // Make the control ready for another move
-                while (Control.IsDrawing)
-                {
-
-                }
-                Control.Clean();
+                Control.Clean(); // Make the control ready for another move
 
             }
             IsLearning = false;
         }
 
         /// <summary>
-        /// Fuction will create a Q-Learning bot that uses a regular Q-function value table
+        /// Fuction will create a Q-Learning bot that uses a regular Q-function value table (still has to be setup
         /// </summary>
         /// <param name="control">The game that is to be learned, bot attaches to it</param>
         public Q_Learning() : base()
         {
-            rand = new Random();
         }
 
+        /// <summary>
+        /// Initialize some learning and technical variables and ready the bot for learning.
+        /// Has to be called before Learn()
+        /// </summary>
+        /// <param name="control"></param>
+        /// <param name="player">The player that the network will be playing</param>
         public override void Setup(GameControlBase control, GameControlBase.Players player)
         {
             base.Setup(control, player);
@@ -179,6 +172,7 @@ namespace Learning
             StateNum = control.StateNum;
         }
 
+        // For serialization
         public override void GetObjectData(SerializationInfo info, StreamingContext context)
         {
             info.AddValue("Q_Table", Q_Table);
@@ -186,6 +180,7 @@ namespace Learning
             info.AddValue("Player", BotTurn);
         }
 
+        // Constructor for serialization
         public Q_Learning(SerializationInfo info, StreamingContext context)
         {
             Q_Table = (double[,])info.GetValue("Q_Table", typeof(double[,]));

@@ -1,11 +1,20 @@
 ﻿using Controller;
+using System;
 using System.Runtime.Serialization;
 
 namespace Learning
 {
     public abstract class Bot
     {
+        /// <summary>
+        /// Go over all actions and return the one with the highest value.
+        /// </summary>
+        /// <param name="control"></param>
+        /// <param name="state">The state of control to use.</param>
+        /// <param name="isLegal">If true, the returned action has to be considered legal in the control.</param>
+        /// <returns></returns>
         protected abstract Actione getMaxAction(GameControlBase control, State state, bool isLegal);
+
         public void TakeAction(GameControlBase control, State state)
         {
             Actione action = getMaxAction(control, state, true);
@@ -15,18 +24,18 @@ namespace Learning
 
     public abstract class LearningBot : Bot, ISerializable
     {
-        
-
         public abstract void Learn(int EpocheNumber, double EpsilonLimit, double EpsilonDecrease, double LearningRate, double DiscountRate, Bot against = null);
         public GameControlBase.Players BotTurn { get; protected set; }
         public bool IsLearning { get; protected set; }
         protected GameControlBase Control;
         public bool IsSetup { get; protected set; }
+        protected Random rand;
 
         public LearningBot()
         {
             IsSetup = false;
             IsLearning = false;
+            rand = new Random();
         }
 
         public virtual void Setup(GameControlBase control, GameControlBase.Players player)
@@ -84,6 +93,27 @@ namespace Learning
 
             
             return action;
+        }
+
+        /// <summary>
+        /// Execute a move by the given bot
+        /// </summary>
+        /// <param name="against">A bot, if null then takes random action</param>
+        protected void BotMove(Bot against)
+        {
+            Actione botAction;
+            if (!Control.IsTerminalState())
+            {
+                if (against != null)
+                    against.TakeAction(Control, Control.GetState());
+                else // Find a random legal action
+                {
+                    botAction = new Actione(rand.Next(Control.ActionNum));
+                    while (!Control.IsLegalAction(botAction))
+                        botAction = new Actione(rand.Next(Control.ActionNum));
+                    Control.DoAction(botAction);
+                }
+            }
         }
 
         public abstract void GetObjectData(SerializationInfo info, StreamingContext context);

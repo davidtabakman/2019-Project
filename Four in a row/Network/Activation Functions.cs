@@ -7,8 +7,11 @@ using System.Threading.Tasks;
 namespace Network
 {
     [Serializable()]
-    public class Activation_Function
+    public class Activation_Function // Activation function class
     {
+        /// <summary>
+        /// Create an Activation Function class, with an ID, a function and its derivative.
+        /// </summary>
         public Activation_Function(int ID, Func<double, double> Function, Func<double, double> Derivative)
         {
             this.ID = ID;
@@ -17,19 +20,19 @@ namespace Network
         }
 
         public int ID { get; }
-
-        public Func<double, double> Function { get; }
+        // Deligate functions
+        public Func<double, double> Function { get; } 
 
         public Func<double, double> Derivative { get; }
     }
 
-    public class Activation_Functions
+    public static class Activation_Functions
     {
-
+        // y=x
         public static double DefaultFunction(double input) => input;
 
         public static double DefaultDerivative(double input) => 1;
-
+        // y=1/(1+e^-x)
         public static double SigmoidFunction(double input) => 1 / (1 + Math.Pow(Math.E, -input));
 
         public static double SigmoidDerivative(double input) => SigmoidFunction(input) * (1 - SigmoidFunction(input));
