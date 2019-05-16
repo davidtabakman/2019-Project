@@ -58,8 +58,6 @@
     <Compile Include="Mousey.cs" />
     <Compile Include="Network\Activation Functions.cs" />
     <Compile Include="Network\FileIO.cs" />
-    <Compile Include="Network\Network.cs" />
-    <Compile Include="Network\NetworkParts.cs" />
     <Compile Include="Network\NetworkVectors.cs" />
     <Compile Include="Physics.cs" />
     <Compile Include="Program.cs" />

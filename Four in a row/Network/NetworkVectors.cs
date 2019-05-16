@@ -163,6 +163,8 @@ namespace Network
 
             }
         }
+
+        // Serialization
         public void GetObjectData(SerializationInfo info, StreamingContext context)
         {
             info.AddValue("Weights", Weights);
@@ -173,6 +175,7 @@ namespace Network
             info.AddValue("Dimensions", Dimensions);
         }
 
+        // Serialization constructor
         public NetworkVectors(SerializationInfo info, StreamingContext context)
         {
             Weights = (List<List<double[]>>)info.GetValue("Weights", typeof(List<List<double[]>>));
