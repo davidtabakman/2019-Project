@@ -21,30 +21,37 @@ namespace Network
         private List<List<double[]>> Gradient;
         private Activation_Function ActivationFunction { get; }
         private List<int> Dimensions { get; }
+        private Random random;
 
-        public NetworkVectors(List<int> Dimensions, double initWeight)
+        /// <summary>
+        /// Create a neural network of some dimensions and an initial weight
+        /// </summary>
+        /// <param name="Dimensions">The dimensions in a form like this: { 10 ,2, 5 ..., numberofneurons}</param>
+        public NetworkVectors(List<int> Dimensions)
         {
-            // Check if parameters are alright
+            // Check if the dimensions are legit
             if (Dimensions.Count <= 1)
                 throw new SystemException("Invalid dimensions");
             foreach (int layer in Dimensions)
                 if (layer < 1)
                     throw new SystemException("Invalid dimensions");
 
-            // Set the activation function
-            ActivationFunction = Activation_Functions.Sigmoid;
+            ActivationFunction = Activation_Functions.Sigmoid; // Set the activation function
 
+            // Initialize all of the variables of the network
             this.Dimensions = Dimensions;
-
             Weights = new List<List<double[]>>();
             Activations = new List<double[]>();
             WeightedSums = new List<double[]>();
             Gradient = new List<List<double[]>>();
+
             // Create the Neural Network Shape according to Dimensions
-            
+            // Layer 0 - Activations and Weighted sums
+            // Layer 1 (between the n and n+1 layer) - Weights and Gradients
+            // Layer 1 - Activations and Weighted sums and so on.
             Activations.Add(CreateZero(Dimensions[0]));
             WeightedSums.Add(CreateZero(Dimensions[0]));
-            Random random = new Random();
+            random = new Random();
             for (int layer = 1; layer < Dimensions.Count; layer++)
             {
                 Activations.Add(CreateZero(Dimensions[layer]));
@@ -56,13 +63,16 @@ namespace Network
                     Weights[layer - 1].Add(new double[Dimensions[layer - 1]]);
                     for (int connection = 0; connection < Dimensions[layer - 1]; connection++)
                     {
-                        Weights[layer - 1][neuron][connection] = random.NextDouble() * 2 - 1; // Random double from -1 to 1
+                        Weights[layer - 1][neuron][connection] = random.NextDouble() * 2 - 1; // Random double from -1 to 1 to initialize the weights
                     }
                 }
             }
 
         }
 
+        /// <summary>
+        /// Print all the activations of all the layers.
+        /// </summary>
         public void Print()
         {
             for (int layer = 0; layer < Activations.Count; layer++)
@@ -71,6 +81,9 @@ namespace Network
             }
         }
 
+        /// <summary>
+        /// Perform a feed-forward: weighted sum = weights * activations (dot product), activation = AFunc(weighted sum).
+        /// </summary>
         public void Feed(double[] input)
         {
             Activations[0] = input;
@@ -84,11 +97,17 @@ namespace Network
             }
         }
 
+        /// <summary>
+        /// Derivative of the cost function that works on arrays.
+        /// </summary>
         public double[] CostDerivative(double[] expected, double[] activation)
         {
             return Sub(activation, expected);
         }
 
+        /// <summary>
+        /// Derivative of the cost function that works on single units.
+        /// </summary>
         public double CostDerivative(double expected, double activation)
         {
             return activation - expected;
@@ -96,25 +115,25 @@ namespace Network
         /// <summary>
         /// Performs a backpropagation sweep to calculate the gradient, using the chain rule, using sigmoid function as activation function
         /// </summary>
-        /// <returns></returns>
         public List<List<double[]>> GetGradient(double[] ExpectedOutput)
         {
+            // Initialize the deltas matrix
             List<double[]> Deltas = new List<double[]>();
-            Deltas.Add(CreateZero(Dimensions[0]));
-            Random random = new Random();
-            for (int layer = 1; layer < Dimensions.Count; layer++)
+            for (int layer = 0; layer < Dimensions.Count; layer++)
             {
                 Deltas.Add(CreateZero(Dimensions[layer]));
             }
+
             int lastLayer = Gradient.Count - 1;
             double[] Delta = new double[Gradient[lastLayer].Count];
             for (int neuron = 0; neuron < Gradient[lastLayer].Count; neuron++)
             {
-                double ActDerivative = CostDerivative(ExpectedOutput[neuron], Activations[lastLayer + 1][neuron]);
-                Delta[neuron] = ActDerivative * Activation_Functions.Sigmoid.Derivative(WeightedSums[lastLayer + 1][neuron]);
+                // According to the chain rule: dC/dW = dC/dA * dA/dZ * dZ/dW = dC/dA * sig'(Z) * A
+                double ActDerivative = CostDerivative(ExpectedOutput[neuron], Activations[lastLayer + 1][neuron]); // dC/dA
+                Delta[neuron] = ActDerivative * Activation_Functions.Sigmoid.Derivative(WeightedSums[lastLayer + 1][neuron]); // dC/dA * sig'(Z)
                 for(int connection = 0; connection < Activations[lastLayer].Length; connection++)
                 {
-                    Gradient[lastLayer][neuron][connection] = Delta[neuron] * Activations[lastLayer][connection];
+                    Gradient[lastLayer][neuron][connection] = Delta[neuron] * Activations[lastLayer][connection]; // dC/dA * sig'(Z) * A
                 }
             }
             Deltas[lastLayer+1] = Delta;
@@ -122,23 +141,31 @@ namespace Network
             {
                 for (int neuron = 0; neuron < Dimensions[layer]; neuron++)
                 {
+                    // According to the chain rule (in the middle of the network): dC/dW = dC/dZ+1 * dZ+1/dZ * dZ/dW =
+                    // = dC/dZ+1 * W * sig'(Z) * A
                     double delta = 0;
                     for (int next_neuron = 0; next_neuron < Dimensions[layer+1]; next_neuron++)
                     {
-                        delta += Deltas[layer+1][next_neuron] * Weights[layer][next_neuron][neuron];
+                        delta += Deltas[layer+1][next_neuron] * Weights[layer][next_neuron][neuron]; // dC/dZ+1 * W
                     }
-                    Deltas[layer][neuron] = delta * Activation_Functions.Sigmoid.Derivative(WeightedSums[layer][neuron]);
+                    Deltas[layer][neuron] = delta * Activation_Functions.Sigmoid.Derivative(WeightedSums[layer][neuron]); // dC/dZ+1 * W * sig'(Z)
                     for (int connection = 0; connection < Dimensions[layer-1]; connection++)
                     {
-                        Gradient[layer - 1][neuron][connection] = Activations[layer - 1][connection] * Deltas[layer][neuron];
+                        Gradient[layer - 1][neuron][connection] = Activations[layer - 1][connection] * Deltas[layer][neuron]; // dC/dZ+1 * W * sig'(Z) * A
                     }
                 }
             }
             return Gradient;
         }
 
+        /// <summary>
+        /// Supervised learning using stochastic gradient descent.
+        /// </summary>
+        /// <param name="Data">Dataset that consists of: Tuple(input, expected output).</param>
+        /// <param name="EpocheNum">Number of times to iterate on the dataset.</param>
         public void SGD(List<Tuple<double[], double[]>> Data, double LearningRate, int EpocheNum)
         {
+            // Initialize Gradients matrix to empty arrays
             List<List<double[]>> Gradients = new List<List<double[]>>();
             for(int layer = 0; layer < Weights.Count; layer++)
             {
@@ -150,13 +177,15 @@ namespace Network
             }
             for (int i = 0; i < EpocheNum; i++)
             {
+                // One iteration of SGD
                 Zero(Gradients);
+                // Sum the gradients
                 foreach (Tuple<double[], double[]> DataPiece in Data)
                 {
                     Feed(DataPiece.Item1);
                     Add(Gradients, GetGradient(DataPiece.Item2));
                 }
-
+                // Decrease the weights by the average of the gradients
                 ScalarDivide(Gradients, Data.Count / LearningRate);
 
                 Sub(Weights, Gradients);

@@ -256,7 +256,7 @@ namespace Learning
             rand = new Random();
             Dimensions = new List<int> { control.FeatureNum + control.ActionNum, 70, 30, 1 };
             if(NeuralNet == null)
-                NeuralNet = new NetworkVectors(Dimensions, 0.1);
+                NeuralNet = new NetworkVectors(Dimensions);
             OldNeuralNet = (NetworkVectors)NeuralNet.Clone();
             Control = control;
             BotTurn = player;

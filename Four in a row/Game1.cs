@@ -19,13 +19,16 @@ namespace GameCenter
         Game = 2
     }
 
+    /// <summary>
+    /// Commands for buttons
+    /// </summary>
     public class Commands
     {
         const string NET_SAVE_NAME = "net1";
 
         public static bool StartFourInARow(GraphicsDevice GraphicsDevice)
         {
-            int[] args = { 7, 6, 1 };
+            int[] args = { 7, 6, 1 }; // Arguments to pass into the game
             Game1.Screen.SetGUI(PresetGuis.InGame);
             FourInARowControl fourInARowControl = new FourInARowControl((int)Priorities.Game);
             fourInARowControl.AttachBot(new DQN());
@@ -36,7 +39,7 @@ namespace GameCenter
 
         public static bool StartTicTac(GraphicsDevice GraphicsDevice)
         {
-            int[] args = { 3, 3, 3 };
+            int[] args = { 3, 3, 3 }; // Arguments to pass into the game
             Game1.Screen.SetGUI(PresetGuis.InGame);
             TicTacControl ticTacControl = new TicTacControl((int)Priorities.Game);
             ticTacControl.AttachBot(new DQN());
@@ -157,7 +160,7 @@ namespace GameCenter
             EventHandle.InitEventHandle(this);
             random = new Random();
             MainFont = Content.Load<SpriteFont>("Basic");
-            NetworkVectors net2 = new NetworkVectors(new List<int>() { 3, 3, 2 }, 1.5);
+            NetworkVectors net2 = new NetworkVectors(new List<int>() { 3, 3, 2 });
             NetworkLoader.SaveSerializable(net2, "net2");
             net2 = null;
             net2 = NetworkLoader.LoadNetworkVectors("net2");

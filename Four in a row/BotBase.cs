@@ -15,6 +15,9 @@ namespace Learning
         /// <returns></returns>
         protected abstract Actione getMaxAction(GameControlBase control, State state, bool isLegal);
 
+        /// <summary>
+        /// Take the best legal action (according to Bot's policy) in the given game state.
+        /// </summary>
         public void TakeAction(GameControlBase control, State state)
         {
             Actione action = getMaxAction(control, state, true);
@@ -24,7 +27,6 @@ namespace Learning
 
     public abstract class LearningBot : Bot, ISerializable
     {
-        public abstract void Learn(int EpocheNumber, double EpsilonLimit, double EpsilonDecrease, double LearningRate, double DiscountRate, Bot against = null);
         public GameControlBase.Players BotTurn { get; protected set; }
         public bool IsLearning { get; protected set; }
         protected GameControlBase Control;
@@ -37,13 +39,22 @@ namespace Learning
             IsLearning = false;
             rand = new Random();
         }
+        /// <summary>
+        /// Learn using some machine learning algorithm.
+        /// </summary>
+        /// <param name="against">If null, opponent is random</param>
+        public abstract void Learn(int EpocheNumber, double EpsilonLimit, double EpsilonDecrease, double LearningRate, double DiscountRate, Bot against = null);
 
+        /// <summary>
+        /// Get the <c>LearningBot</c> ready to <c>Learn()</c>
+        /// </summary>
+        /// <param name="player">The turn the <c>LearningBot</c> will take</param>
         public virtual void Setup(GameControlBase control, GameControlBase.Players player)
         {
             IsSetup = true;
         }
 
-        public void Stop()
+        public virtual void Stop()
         {
             IsLearning = false;
         }
@@ -54,6 +65,9 @@ namespace Learning
         protected int losses = 0;
         protected int draws = 0;
 
+        /// <summary>
+        /// Track the win lose draw ratio
+        /// </summary>
         protected void Track()
         {
             if (Control.IsTerminalState())
@@ -77,10 +91,15 @@ namespace Learning
             }
         }
 
-        protected Actione TakeEpsilonGreedyAction(double epsilon, State state, System.Random rand)
+        /// <summary>
+        /// Return an action according to an epsilon greedy policy.
+        /// Means either best or random.
+        /// </summary>
+        /// <param name="epsilon">The chance of the action being random</param>
+        /// <param name="state"></param>
+        protected Actione TakeEpsilonGreedyAction(double epsilon, State state, Random rand)
         {
             Actione action;
-            // Take action
             if (rand.NextDouble() <= epsilon)
             {
                 action = new Actione(rand.Next(Control.ActionNum));
@@ -116,6 +135,7 @@ namespace Learning
             }
         }
 
+        // Serialization
         public abstract void GetObjectData(SerializationInfo info, StreamingContext context);
     }
 }

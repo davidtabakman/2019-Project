@@ -43,9 +43,9 @@ namespace Four_in_a_row
             SpriteBatch sb = new SpriteBatch(gd);
             sb.Begin();
             // Fill the background with a white color
-            sb.Draw(ShapeCreator.rectangle(gd, Color.White, width, height), Vector2.Zero, Color.White);
+            sb.Draw(ShapeCreator.Rect(gd, Color.White, width, height), Vector2.Zero, Color.White);
             // Draw the to-be board
-            sb.Draw(ShapeCreator.rectangle(gd, background, width, height), new Vector2(0, deltaY), Color.White);
+            sb.Draw(ShapeCreator.Rect(gd, background, width, height), new Vector2(0, deltaY), Color.White);
             DrawHoles(gd, sb);
             sb.End();
             // Make the white pixels transperent in order to create layering
@@ -71,7 +71,7 @@ namespace Four_in_a_row
             // Calculate the distance between the leftmost point on the circle to the left wall of the tile
             float seperationX = (deltaX - 2 * circleRadius) / 2;
             float seperationY = (deltaY - 2 * circleRadius) / 2;
-            Texture2D circle = ShapeCreator.circle(gd, Color.White, radius);
+            Texture2D circle = ShapeCreator.Circle(gd, Color.White, radius);
             for (float x = seperationX; x < width; x += deltaX)
             {
                 for (float y = deltaY + seperationY; y < height; y += deltaY)

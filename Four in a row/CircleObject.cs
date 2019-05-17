@@ -15,16 +15,13 @@ namespace Four_in_a_row
         /// <param name="color"></param>
         /// <param name="gd"></param>
         /// <param name="radius"></param>
-        public CircleObject(Vector2 Location, Color color, GraphicsDevice gd, int radius) : base(Location, ShapeCreator.circle(gd, color, radius))
+        public CircleObject(Vector2 Location, Color color, GraphicsDevice gd, int radius) : base(Location, ShapeCreator.Circle(gd, color, radius))
         {
             Frozen = false;
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
         /// <param name="gameObjects">List of all other game objects in current game</param>
-        public override void Update(LinkedList<GameObject> gameObjects)
+        public override void Update(List<GameObject> gameObjects)
         {
             ApplyPhysics(gameObjects);
             base.Update(gameObjects);
@@ -34,7 +31,7 @@ namespace Four_in_a_row
         /// Apply gravity, if collides with someone, freeze
         /// </summary>
         /// <param name="gameObjects">List of all other game objects for collision checking</param>
-        public void ApplyPhysics(LinkedList<GameObject> gameObjects)
+        public void ApplyPhysics(List<GameObject> gameObjects)
         {
             if (!Frozen)
             {
@@ -52,7 +49,7 @@ namespace Four_in_a_row
             }
         }
 
-        public override bool isPhysical()
+        public override bool IsPhysical()
         {
             return true;
         }

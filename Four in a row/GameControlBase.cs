@@ -9,6 +9,7 @@ using Controller;
 
 namespace Controller
 {
+
     public class Actione
     {
         public int ID { get; private set; }
@@ -30,6 +31,9 @@ namespace Controller
             Board = null;
         }
 
+        /// <summary>
+        /// Create a state using a board of players.
+        /// </summary>
         public State (GameControlBase.Players[,] board)
         {
             Board = new double[board.GetLength(0), board.GetLength(1)];
@@ -42,7 +46,9 @@ namespace Controller
             }
             ID = -1;
         }
-
+        /// <summary>
+        /// Create a state using an ID and a board of players.
+        /// </summary>
         public State(int ID, GameControlBase.Players[,] board)
         {
             Board = new double[board.GetLength(0), board.GetLength(1)];
@@ -57,23 +63,29 @@ namespace Controller
         }
     }
 
+    /// <summary>
+    /// The base for all game related controls.
+    /// </summary>
     public abstract class GameControlBase : ControlBase
     {
+        // Player ID's
         public enum Players
         {
             Player1 = 1,
             Player2 = 2,
             NoPlayer = 0
         }
-        
+
+        public Players CurrTurn { get; protected set; }
+        public bool IsDrawing { get; protected set; }
+        public int FeatureNum;
 
         public GameControlBase(int ClickPriority) : base(ClickPriority)
         {
-            IsLearnable = true;
+            IsLearnable = true; // Games are learnable
         }
-        
-        public Players CurrTurn { get; protected set; }
-        public bool IsDrawing { get; protected set; }
+
+        // All the required functions for machine learning
         public abstract void StartLearn();
         public abstract void StopLearn();
         public abstract State GetState();
@@ -84,7 +96,6 @@ namespace Controller
         public abstract bool IsTerminalState(State s);
         public abstract void Clean();
         public abstract Players CheckWin();
-        public int FeatureNum;
         public abstract void SetBot(LearningBot bot);
         public abstract LearningBot GetBot();
     }

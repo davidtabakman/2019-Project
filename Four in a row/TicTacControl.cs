@@ -21,16 +21,25 @@ namespace TicTacToe
         private int ToWin;
         private LearningBot bot;
 
+        /// <summary>
+        /// Create a Tic Tac Toe control class that will draw, update etc.
+        /// </summary>
+        /// <param name="ClickPriority">The lower this number is, the higher the priority is.</param>
         public TicTacControl(int ClickPriority) : base(ClickPriority)
         {
-            
+           
         }
-
+        /// <summary>
+        /// Attach the bot to the control, after this StartLearn can be called.
+        /// </summary>
         public void AttachBot(LearningBot botAttach)
         {
             bot = botAttach;
         }
 
+        /// <summary>
+        /// Start learning with the bot.
+        /// </summary>
         private void StartBot()
         {
             if (!bot.IsSetup)        
@@ -39,12 +48,18 @@ namespace TicTacToe
             Restart();
         }
 
+        /// <summary>
+        /// Trasfer the ID integer of a state into a board
+        /// </summary>
+        /// <param name="state"></param>
+        /// <returns></returns>
         private Players[,] StateToTiles(State state)
         {
             int stateID = state.ID;
             int stateIDInBase3 = 0;
             int power = 0;
             int length = 0;
+            // State from base 10 to base 3
             while (stateID != 0)
             {
                 stateIDInBase3 += stateID % 3 * (int)Math.Pow(10, power);
@@ -52,6 +67,7 @@ namespace TicTacToe
                 length++;
                 power++;
             }
+            // From base 3 to the board
             Players[,] tmpTiles = new Players[ColNum, RowNum];
             int x = 0;
             int y = 0;
@@ -60,17 +76,17 @@ namespace TicTacToe
                 tmpTiles[x, y] = (Players)(stateIDInBase3 % 10);
                 stateIDInBase3 /= 10;
                 y++;
-                if (y > 2)
+                if (y > RowNum)
                 {
                     y = 0;
                     x++;
                 }
             }
-            while (x < 3)
+            while (x < ColNum)
             {
                 tmpTiles[x, y] = Players.NoPlayer;
                 y++;
-                if (y > 2)
+                if (y > RowNum)
                 {
                     y = 0;
                     x++;
@@ -79,18 +95,23 @@ namespace TicTacToe
             return tmpTiles;
         }
 
+        /// <summary>
+        /// Start the tic tac toe game. 
+        /// </summary>
+        /// <param name="args">Game parameters: Number of collumns, number of rows, how many in a row is needed to win</param>
         public override void Start(GraphicsDevice gd, int[] args)
         {
             RowNum = args[0];
             ColNum = args[1];
             ToWin = args[2];
-            FeatureNum = ColNum * RowNum * 3;
+            FeatureNum = ColNum * RowNum * 3; // Every tile has three features - isplayer1? isplayer2? isnoplayer?
             ActionNum = RowNum * ColNum;
             StateNum = (int)Math.Pow(3, RowNum * ColNum);
             float deltaX = Game1.w_width / ColNum;
             float deltaY = Game1.w_height / RowNum;
+            // Create textures for drawing
             Board = CreateBoard(gd);
-            Circle = ShapeCreator.CreateHollowCircle(gd, deltaX, deltaY);
+            Circle = ShapeCreator.CreateHollowCircle(gd, deltaX, deltaY, 5);
             X = ShapeCreator.CreateX(gd, deltaX, deltaY);
             Tiles = new Players[ColNum, RowNum];
             for (int x = 0; x < ColNum; x++)
@@ -105,6 +126,11 @@ namespace TicTacToe
             CurrTurn = Players.Player1;
         }
 
+        /// <summary>
+        /// Create the board of the tic tac toe game
+        /// </summary>
+        /// <param name="gd"></param>
+        /// <returns></returns>
         private Texture2D CreateBoard(GraphicsDevice gd)
         {
             RenderTarget2D background = new RenderTarget2D(gd, Game1.w_width, Game1.w_height);
@@ -114,17 +140,17 @@ namespace TicTacToe
             tmp.Begin();
 
             //Draw background:
-            tmp.Draw(ShapeCreator.rectangle(gd, Color.White, Game1.w_width, Game1.w_height), Vector2.Zero, Color.White);
+            tmp.Draw(ShapeCreator.Rect(gd, Color.White, Game1.w_width, Game1.w_height), Vector2.Zero, Color.White);
 
             //Draw Collumns:
             float deltaX = Game1.w_width / ColNum;
             for (float i = deltaX; i < Game1.w_width; i += deltaX)
-                tmp.Draw(ShapeCreator.rectangle(gd, Color.Black, 1, Game1.w_height), new Vector2(i, 0), Color.White);
+                tmp.Draw(ShapeCreator.Rect(gd, Color.Black, 1, Game1.w_height), new Vector2(i, 0), Color.White);
 
             //Draw rows:
             float deltaY = Game1.w_height / RowNum;
             for (float i = deltaY; i < Game1.w_height; i += deltaY)
-                tmp.Draw(ShapeCreator.rectangle(gd, Color.Black, Game1.w_width, 1), new Vector2(0, i), Color.White);
+                tmp.Draw(ShapeCreator.Rect(gd, Color.Black, Game1.w_width, 1), new Vector2(0, i), Color.White);
 
             tmp.End();
             gd.SetRenderTargets(last);
@@ -137,6 +163,7 @@ namespace TicTacToe
             float deltaX = Game1.w_width / ColNum;
             float deltaY = Game1.w_height / RowNum;
 
+            // Go over all tiles and draw either circles or Xs
             for (int x = 0; x < ColNum; x++)
             {
                 for (int y = 0; y < RowNum; y++)
@@ -150,12 +177,14 @@ namespace TicTacToe
             }
         }
 
-
         public override void Update(GameTime gameTime)
         {
             return;
         }
 
+        /// <summary>
+        /// Add a new object (either X or O) according to CurrTurn
+        /// </summary>
         private void AddObject(Vector2 position)
         {
             float deltaX = Game1.w_width / ColNum;
@@ -173,8 +202,12 @@ namespace TicTacToe
             Clean();
         }
 
+        /// <summary>
+        /// Function called on left click release
+        /// </summary>
         public override bool HandleClick(Vector2 position)
         {
+            // If a bot is loaded, play against it
             if (bot != null && bot.IsLearning)
                 return false;
             AddObject(position);
@@ -187,6 +220,9 @@ namespace TicTacToe
             return true;
         }
 
+        /// <summary>
+        /// Return which player (player1, player2, no player) has won in the current game state.
+        /// </summary>
         public override Players CheckWin()
         {
             // Check wins horizontal
@@ -273,6 +309,9 @@ namespace TicTacToe
             return Players.NoPlayer;
         }
 
+        /// <summary>
+        /// To be called when the exiting the game. Disposes all the textures
+        /// </summary>
         public override void Clear()
         {
             Board.Dispose();
@@ -282,6 +321,9 @@ namespace TicTacToe
                 bot.Stop();
         }
 
+        /// <summary>
+        /// Restart the game.
+        /// </summary>
         public void Restart()
         {
             for (int x = 0; x < ColNum; x++)
@@ -297,6 +339,9 @@ namespace TicTacToe
                 bot.TakeAction(this, GetState());
         }
 
+        /// <summary>
+        /// Get the state of the game. It is encoded in a way that every state has just one ID.
+        /// </summary>
         public override State GetState()
         {
             int stateID = 0;
@@ -304,7 +349,8 @@ namespace TicTacToe
             {
                 for (int y = 0; y < RowNum; y++)
                 {
-                    stateID += (int)Tiles[x, y] * (int)Math.Pow(3, (x * 3 + y ));
+                    
+                    stateID += (int)Tiles[x, y] * (int)Math.Pow(3, x * 3 + y );
                 }
             }
             return new State(stateID, Tiles);
@@ -323,6 +369,9 @@ namespace TicTacToe
             return true;
         }
 
+        /// <summary>
+        /// Execute the action and pass to the next turn
+        /// </summary>
         public override void DoAction(Actione action)
         {
 
@@ -335,6 +384,9 @@ namespace TicTacToe
             NextTurn();
         }
 
+        /// <summary>
+        /// Change the current player to the other player
+        /// </summary>
         private void NextTurn()
         {
             if (CurrTurn == Players.Player1)
@@ -376,38 +428,20 @@ namespace TicTacToe
                 return 0;
         }
 
-        public void RandomAction()
-        {
-            Random rand = new Random();
-
-            int addX = 0;
-            int addY = 0;
-
-            if (NoMovesLeft())
-            {
-                return;
-            }
-
-            while (Tiles[addX, addY] != Players.NoPlayer)
-            {
-                addX = rand.Next(ColNum);
-                addY = rand.Next(RowNum);
-            }
-            Tiles[addX, addY] = CurrTurn;
-
-            NextTurn();
-
-        }
-
+        /// <summary>
+        /// Makes the control ready for another move
+        /// </summary>
         public override void Clean()
         {
             if (IsTerminalState())
             {
                 Restart();
             }
-
         }
 
+        /// <summary>
+        /// Check if an action is legal in the current game state
+        /// </summary>
         public override bool IsLegalAction(Actione action)
         {
             int addY = action.ID / ColNum;
@@ -440,6 +474,9 @@ namespace TicTacToe
             return isTerminal;
         }
 
+        /// <summary>
+        /// Start learning with the bot in a different thread
+        /// </summary>
         public override void StartLearn()
         {
             if (!bot.IsLearning)
@@ -451,6 +488,9 @@ namespace TicTacToe
             }
         }
 
+        /// <summary>
+        /// Stop learning with the bot
+        /// </summary>
         public override void StopLearn()
         {
             if (bot.IsLearning)

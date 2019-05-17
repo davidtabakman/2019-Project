@@ -7,12 +7,16 @@ using GameCenter;
 using Controller;
 using Learning;
 using System.Threading;
+using System.Linq;
 
 namespace Four_in_a_row
 {
     public class FourInARowControl : GameControlBase
     {
-
+        /// <summary>
+        /// Create a four in a row control class that will draw, update etc.
+        /// </summary>
+        /// <param name="ClickPriority">The lower this number is, the higher the priority is.</param>
         public FourInARowControl(int ClickPriority) : base(ClickPriority)
         {
         }
@@ -29,7 +33,7 @@ namespace Four_in_a_row
         private Dictionary<string, List<GameObject>> ObjList; // Objects to draw
         private GraphicsDevice graphicsDevice { get; set; }
         private Players[,] circleList; // Array for use in win checking and learning etc. Doesn't have anything to do with graphics
-        private Dictionary<Players, Color> PlayerColor;
+        private Dictionary<Players, Color> PlayerColor; // Colors of the players
         private int RowNum { get; set; }
         private int ColNum { get; set; }
         private Modes Mode { get; set; }
@@ -39,16 +43,17 @@ namespace Four_in_a_row
         /// <summary>
         /// Start the four in a row game. Initializes the board and other variables
         /// </summary>
-        /// <param name="gd"></param>
-        /// <param name="args">Game parameters: Number of collumns, number of rows, game mode (0 - Graphical, 1 - Quick). Has to be of length 3</param>
+        /// <param name="args">Game parameters: Number of collumns, number of rows, game mode (0 - Graphical, 1 - Quick, 2 - Learning). Has to be of length 3</param>
         public override void Start(GraphicsDevice gd, int[] args)
         {
             if (args[2] == 1)
                 Mode = Modes.Quick;
             else if (args[2] == 0)
                 Mode = Modes.Graphical;
-            else
+            else if (args[2] == 2)
                 Mode = Modes.Learning;
+            else
+                throw new Exception("Invalid arguments");
 
             RowNum = args[1] + 1; // 1 is added for future convinience
             ColNum = args[0];
@@ -59,7 +64,7 @@ namespace Four_in_a_row
             // First turn is of Player1
             CurrTurn = Players.Player1;
 
-            // Initialize the logic board
+            // Initialize the logics board
             circleList = new Players[ColNum, RowNum-1];
             for (int x = 0; x < ColNum; x++)
             {
@@ -70,10 +75,9 @@ namespace Four_in_a_row
             }
             FeatureNum = ColNum * (RowNum - 1) * 3;
 
-            // Initialize the objects-for-drawing/physics list
+            // Initialize the Game Objects lists (by string names)
             ObjList = new Dictionary<string, List<GameObject>>();
             ObjList.Add("Drawable", new List<GameObject>());
-
             ObjList.Add("NonDrawable", new List<GameObject>());
 
             // Add floor
@@ -86,6 +90,7 @@ namespace Four_in_a_row
             }
             ObjList["NonDrawable"].Add(new GameObject(new Rectangle(0, Game1.w_height + fixY, Game1.w_width, 10)));
 
+            // Add all circle objects and set them as not visible
             float deltaX = board.width / ColNum;
             float deltaY = board.height / RowNum;
             for (int x = 0; x < ColNum; x++)
@@ -95,15 +100,17 @@ namespace Four_in_a_row
                     Vector2 location = new Vector2(x * deltaX, y * deltaY);
                     CircleObject newCircle = new CircleObject(location, Color.White, graphicsDevice, CircleRadius);
                     newCircle.IsVisible = false;
+                    newCircle.Freeze();
                     ObjList["Drawable"].Add(newCircle);
                 }
             }
             
-
-   
             PlayerToColorInit();
         }
 
+        /// <summary>
+        /// Restart the game.
+        /// </summary>
         private void Restart(Modes mode)
         {
             for (int x = 0; x < circleList.GetLength(0); x++)
@@ -114,25 +121,20 @@ namespace Four_in_a_row
                 }
             }
             Mode = mode;
-            /*
-            if (mode != Modes.Learning)
-            {
-                ObjList.Clear();
-                int CircleRadius = Math.Min(board.width / (ColNum * 2), board.height / (RowNum * 2));
-                int fixY = 0;
-                if (board.width / (ColNum * 2) < board.height / ((RowNum + 1) * 2))
-                {
-                    fixY = (board.height / RowNum - CircleRadius * 2) / 2;
-                }
-                ObjList.Add(new GameObject(new Rectangle(0, Game1.w_height + fixY, Game1.w_width, 10)));
-            }
-            */
+
             foreach (GameObject gameObject in ObjList["Drawable"])
             {
                 gameObject.IsVisible = false;
             }
+
+            CurrTurn = Players.Player1;
+
+            if (bot != null && !bot.IsLearning && bot.BotTurn == Players.Player1)
+                bot.TakeAction(this, GetState());
         }
-        //Initialize the player-to-color dictionary
+        /// <summary>
+        /// Initialize the player-to-color dictionary.
+        /// </summary>
         private void PlayerToColorInit()
         {
             PlayerColor = new Dictionary<Players, Color>
@@ -142,9 +144,12 @@ namespace Four_in_a_row
             };
         }
 
-        // Function called on left click release
+        /// <summary>
+        /// Function called on left click release
+        /// </summary>
         public override bool HandleClick(Vector2 position)
         {
+            // If a bot is loaded, play against it
             if (bot != null && bot.IsLearning)
                 return false;
             AddCircle(position);
@@ -159,10 +164,16 @@ namespace Four_in_a_row
 
         public override void Update(GameTime gameTime)
         {
-            // Checks if a player has won the game in its current state
-            
-
-
+            // Apply physics on all the objects in the game
+            List<GameObject> obj = new List<GameObject>();
+            foreach(var objList in ObjList.Values)
+            {
+                obj.AddRange(objList);
+            }
+            foreach (GameObject c in obj)
+            {
+                c.Update(obj);
+            }
         }
 
         public override void Draw(SpriteBatch sb)
@@ -170,7 +181,7 @@ namespace Four_in_a_row
             if (Mode != Modes.Learning)
             {
                 IsDrawing = true;
-                // Draw all the circles
+                // Draw all the drawable objects
                 for (int i = 0; i < ObjList["Drawable"].Count; i++)
                 {
                     GameObject c = ObjList["Drawable"][i];
@@ -212,6 +223,10 @@ namespace Four_in_a_row
                 CurrTurn = Players.Player1;
         }
 
+        /// <summary>
+        /// Add a circle to its final place and freeze it immidiently
+        /// </summary>
+        /// <param name="addX">The collumn in which it will be added</param>
         private void QuickAdd(int addX)
         {
             if (circleList[addX, RowNum - 2] != Players.NoPlayer)
@@ -249,7 +264,12 @@ namespace Four_in_a_row
 
             NextTurn();
         }
-
+        
+        /// <summary>
+        /// Add a circle at the top of a collumn, if it will collide with another circle cancel the adding.
+        /// </summary>
+        /// <param name="addX">The collumn it will be added at</param>
+        /// <param name="pos">The position of the click</param>
         private void GraphicalAdd(int addX, Vector2 pos)
         {
             /*int fixX = (board.width / ColNum - CircleRadius * 2) / 2;
@@ -314,8 +334,6 @@ namespace Four_in_a_row
         /// <summary>
         /// Give the appropriate top left coordinates of a specific collumn that contains pos
         /// </summary>
-        /// <param name="pos"></param>
-        /// <returns></returns>
         public Vector2 ClampCircle(Vector2 pos)
         {
             int deltaX = board.width / ColNum;
@@ -326,6 +344,9 @@ namespace Four_in_a_row
             return new Vector2(newX, newY);
         }
 
+        /// <summary>
+        /// Return which player (player1, player2, no player) has won in the current game state.
+        /// </summary>
         public override Players CheckWin()
         {
             // Check wins horizontal
@@ -411,14 +432,21 @@ namespace Four_in_a_row
             return Players.NoPlayer;
         }
 
+        /// <summary>
+        /// To be called when the exiting the game. Disposes all the textures
+        /// </summary>
         public override void Clear()
         {
             board.Dispose();
-            /*foreach (var obj in ObjList){
+            foreach (var obj in ObjList["Drawable"])
                 obj.Dispose();
-            }*/
+            if (bot != null)
+                bot.Stop();
         }
 
+        /// <summary>
+        /// Get the state of the game.
+        /// </summary>
         public override State GetState()
         {
             return new State(circleList);
@@ -434,6 +462,9 @@ namespace Four_in_a_row
                 return -5;
         }
 
+        /// <summary>
+        /// Check if an action is legal in the current game state
+        /// </summary>
         public override bool IsLegalAction(Actione action)
         {
             if (circleList[action.ID, RowNum - 2] != Players.NoPlayer)
@@ -441,6 +472,9 @@ namespace Four_in_a_row
             return true;
         }
 
+        /// <summary>
+        /// Execute the action and pass to the next turn
+        /// </summary>
         public override void DoAction(Actione action)
         {
             QuickAdd(action.ID);
@@ -465,6 +499,9 @@ namespace Four_in_a_row
             return true;
         }
 
+        /// <summary>
+        /// Makes the control ready for another move
+        /// </summary>
         public override void Clean()
         {
             if (IsTerminalState())
@@ -483,6 +520,9 @@ namespace Four_in_a_row
                 return true;
         }
 
+        /// <summary>
+        /// Start learning with the bot in a different thread
+        /// </summary>
         public override void StartLearn()
         {
             if (!bot.IsLearning)
@@ -494,12 +534,17 @@ namespace Four_in_a_row
             }
         }
 
-
+        /// <summary>
+        /// Attach the bot to the control, after this StartLearn can be called.
+        /// </summary>
         public void AttachBot(LearningBot botAttach)
         {
             bot = botAttach;
         }
 
+        /// <summary>
+        /// Start learning with the bot.
+        /// </summary>
         private void StartBot()
         {
             if (!bot.IsSetup)
@@ -508,7 +553,9 @@ namespace Four_in_a_row
             Restart(Mode);
         }
 
-
+        /// <summary>
+        /// Stop learning with the bot
+        /// </summary>
         public override void StopLearn()
         {
             if (bot.IsLearning)
@@ -521,6 +568,7 @@ namespace Four_in_a_row
         public override void SetBot(LearningBot bot)
         {
             this.bot = bot;
+            Restart(Mode);
         }
 
         public override LearningBot GetBot()

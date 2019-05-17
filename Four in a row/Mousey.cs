@@ -10,9 +10,8 @@ namespace Four_in_a_row
         public Vector2 Position { get; }
 
         /// <summary>
-        /// Creates an EventArgs for mouse pressed, containing a position
+        /// Creates an <c>EventArgs</c> for mouse pressed, containing a position
         /// </summary>
-        /// <param name="pos"></param>
         public LBReleasedEventArgs(Vector2 pos)
         {
             Position = pos;
@@ -35,6 +34,9 @@ namespace Four_in_a_row
             LBReleased();
         }
 
+        /// <summary>
+        /// Return whether LB is pressed
+        /// </summary>
         static public bool LBPressed()
         {
             if (mouseState.LeftButton == ButtonState.Pressed)
@@ -42,6 +44,9 @@ namespace Four_in_a_row
             return false;
         }
 
+        /// <summary>
+        /// Return whether RB is pressed
+        /// </summary>
         static public bool RBPressed()
         {
             if (mouseState.RightButton == ButtonState.Pressed)
@@ -49,6 +54,9 @@ namespace Four_in_a_row
             return false;
         }
 
+        /// <summary>
+        /// Return whether LB was released
+        /// </summary>
         static public bool LBReleased()
         {
             if (mouseState.LeftButton == ButtonState.Released && previousState.LeftButton == ButtonState.Pressed)
@@ -59,6 +67,9 @@ namespace Four_in_a_row
             return false;
         }
 
+        /// <summary>
+        /// What happens when LB is released
+        /// </summary>
         static private void OnLBReleased()
         {
             // Call the delegate event function

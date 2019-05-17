@@ -5,16 +5,22 @@ using System.Collections.Generic;
 
 namespace Four_in_a_row
 {
+    /// <summary>
+    /// An object in a game, has location, size speed etc.
+    /// </summary>
     public class GameObject
     {
         public Vector2 Location { get; set; }
         public Vector2 Size { get; set; }
         public Vector2 Speed { get; set; }
         public Rectangle Bounds { get; set; }
-        public bool Frozen { get; set; }
+        public bool Frozen { get; set; } // Can it move?
         public bool IsVisible { get; set; }
         public Color Color { get; set; }
 
+        /// <summary>
+        /// Create a game object at a specific location and with a specific size
+        /// </summary>
         public GameObject(Rectangle Bounds)
         {
             Location = new Vector2(Bounds.X, Bounds.Y);
@@ -28,12 +34,15 @@ namespace Four_in_a_row
             Frozen = true;
         }
 
-        public virtual void Update(LinkedList<GameObject> gameObjects)
+        public virtual void Update(List<GameObject> gameObjects)
         {
             Location += Speed;
             Bounds = new Rectangle((int)Location.X, (int)Location.Y, (int)Size.X, (int)Size.Y);
         }
 
+        /// <summary>
+        /// Change the size of the object (width, height)
+        /// </summary>
         public void EditHitbox(Vector2 newSize)
         {
             Size = newSize;
@@ -49,6 +58,9 @@ namespace Four_in_a_row
             Location += delta;
         }
 
+        /// <summary>
+        /// Check if the object contains a point
+        /// </summary>
         public virtual bool Contains(Vector2 Point)
         {
             if (Location.X < Point.X && Location.X + Size.X > Point.X)
@@ -61,6 +73,9 @@ namespace Four_in_a_row
             return false;
         }
 
+        /// <summary>
+        /// Checks whether or not the other <c>Rectangle</c> collides with this game object
+        /// </summary>
         public virtual bool Collides(Rectangle with)
         {
             if (Bounds.Intersects(with))
@@ -68,6 +83,9 @@ namespace Four_in_a_row
             return false;
         }
 
+        /// <summary>
+        /// Checks whether or not the other <c>GameObject</c> collides with this game object
+        /// </summary>
         public virtual bool Collides(GameObject with)
         {
             if(Collides(with.Bounds))
@@ -75,12 +93,12 @@ namespace Four_in_a_row
             return false;
         }
 
-        public virtual bool isPhysical()
+        public virtual bool IsPhysical()
         {
             return false;
         }
 
-        public virtual bool isDrawable()
+        public virtual bool IsDrawable()
         {
             return false;
         }

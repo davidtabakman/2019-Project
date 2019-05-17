@@ -22,17 +22,9 @@ namespace Helper
     {
         private static Random random = new Random();
 
-        public static void Zero(int[,] what)
-        {
-            for (int x = 0; x < what.GetLength(0); x++)
-            {
-                for (int y = 0; y < what.GetLength(1); y++)
-                {
-                    what[x, y] = 0;
-                }
-            }
-        }
-
+        /// <summary>
+        /// Fill with zeroes
+        /// </summary>
         public static void Zero(List<List<double[]>> what)
         {
             for (int i = 0; i < what.Count; i++)
@@ -47,6 +39,9 @@ namespace Helper
             }
         }
 
+        /// <summary>
+        /// Fill with zeroes
+        /// </summary>
         public static void Zero(double[] what)
         {
             for(int x = 0; x < what.Length; x++)
@@ -55,6 +50,10 @@ namespace Helper
             }
         }
 
+        /// <summary>
+        /// Create an array filled with zeroes
+        /// </summary>
+        /// <param name="len">Length of the array</param>
         public static double[] CreateZero(int len)
         {
             double[] retVec = new double[len];
@@ -62,6 +61,10 @@ namespace Helper
             return retVec;
         }
 
+        /// <summary>
+        /// Craete an array initiated with a value
+        /// </summary>
+        /// <param name="len">Length of the array</param>
         public static double[] CreateInitArray(int len, double value)
         {
             double[] retVec = new double[len];
@@ -69,6 +72,9 @@ namespace Helper
             return retVec;
         }
         
+        /// <summary>
+        /// Fill the array with some value
+        /// </summary>
         public static void InitArray(double[] array, double with)
         {
             for(int i = 0; i < array.Length; i++)
@@ -77,6 +83,9 @@ namespace Helper
             }
         }
 
+        /// <summary>
+        /// Translate the array into a string
+        /// </summary>
         public static string ArrayToString(double[] array)
         {
             string retArr = "<";
@@ -88,6 +97,9 @@ namespace Helper
             return retArr;
         } 
 
+        /// <summary>
+        /// Return the sum of an array
+        /// </summary>
         public static double Sum(double[] arr)
         {
             double sum = 0;
@@ -96,6 +108,10 @@ namespace Helper
             return sum;
         }
 
+        /// <summary>
+        /// Perform Dot multiplication on two arrays
+        /// </summary>
+        /// <returns>The dot product</returns>
         public static double Dot(double[] arr1, double[] arr2)
         {
              double[] target = new double[arr1.Length];
@@ -106,6 +122,9 @@ namespace Helper
             return Sum(target);
         }
 
+        /// <summary>
+        /// Perform multiplication by a scalar. Return a new array.
+        /// </summary>
         public static double[] ScalarMultiply(double[] vec, double value)
         {
             double[] retVec = new double[vec.Length];
@@ -116,6 +135,9 @@ namespace Helper
             return retVec;
         }
 
+        /// <summary>
+        /// Substitude an array from another. Return a new array
+        /// </summary>
         public static double[] Sub(double[] from, double[] what)
         {
             double[] retVec = new double[from.Length];
@@ -126,16 +148,9 @@ namespace Helper
             return retVec;
         }
 
-        public static double[] Multiply(double[] vec1, double[] vec2)
-        {
-            double[] retVec = new double[vec1.Length];
-            for (int i = 0; i < vec1.Length; i++)
-            {
-                retVec[i] = vec1[i] * vec2[i];
-            }
-            return retVec;
-        }
-
+        /// <summary>
+        /// Apply a delegate function to an array. Return a new array
+        /// </summary>
         public static double[] ApplyFunction(double[] to, Func<double, double> func)
         {
             double[] retVec = new double[to.Length];
@@ -146,6 +161,10 @@ namespace Helper
             return retVec;
         }
 
+        /// <summary>
+        /// Return whether a value exits in an array.
+        /// </summary>
+        /// <typeparam name="T">Has to be comparable</typeparam>
         public static bool ExistsIn<T>(T[] inWhat, T what) where T : IComparable<T>
         {
             foreach (T obj in inWhat)
@@ -158,15 +177,19 @@ namespace Helper
             return false;
         }
 
+        /// <summary>
+        /// Return a random sample of a given size from a list
+        /// </summary>
         public static List<T> RandomSample<T>(List<T> from, int sampleSize)
         {
             int counter = 0;
             int BatchSize = from.Count;
-            int[] indexes = new int[Math.Min(BatchSize, sampleSize)];
+            int[] indexes = new int[Math.Min(BatchSize, sampleSize)]; // The indexes to be returned
             for (int i = 0; i < indexes.Length; i++)
             {
-                indexes[i] = -1;
+                indexes[i] = -1; // Initialize the indexes to -1
             }
+            // Fill the indexes array with random indexes, that do not repeat
             while (counter < sampleSize && counter < BatchSize)
             {
                 int index = random.Next(BatchSize);
@@ -175,6 +198,7 @@ namespace Helper
                 indexes[counter] = index;
                 counter++;
             }
+            // Translate the indexes to the actual objects
             List<T> Sample = new List<T>();
             foreach(int index in indexes)
             {
@@ -183,23 +207,10 @@ namespace Helper
             return Sample;
         }
 
-        public static T[] Flatten<T>(T[,] what)
-        {
-            int x_len = what.GetLength(0);
-            int y_len = what.GetLength(1);
-            T[] Flattened = new T[x_len * y_len];
-            
-            for (int x = 0; x < x_len; x++)
-            {
-                for(int y = 0; y < y_len; y++)
-                {
-                    Flattened[x * x_len + y] = what[x, y];
-                }
-            }
-
-            return Flattened;
-        }
-
+        /// <summary>
+        /// Return the index of the biggest element
+        /// </summary>
+        /// <typeparam name="T">Has to be comparable</typeparam>
         public static int MaxArg<T>(T[] inWhat) where T : IComparable<T>
         {
             int maxArg = 0;
@@ -213,6 +224,10 @@ namespace Helper
             return maxArg;
         }
 
+        /// <summary>
+        /// Return the maximum value in an array
+        /// </summary>
+        /// <typeparam name="T">Has to be comparable</typeparam>
         public static T Max<T>(T[] inWhat) where T : IComparable<T>
         {
             int maxArg = 0;
@@ -226,9 +241,11 @@ namespace Helper
             return inWhat[maxArg];
         }
 
+        /// <summary>
+        /// Add a scalar to every element in an array
+        /// </summary>
         public static void ScalarAdd(double[] toWhat, double what)
         {
-
             for(int i = 0; i < toWhat.Length; i++)
             {
                 toWhat[i] += what;
@@ -236,16 +253,20 @@ namespace Helper
             
         }
 
+        /// <summary>
+        /// Divide every element in an array by a scalar
+        /// </summary>
         public static void ScalarDivide(double[] what, double by)
         {
-
             for (int i = 0; i < what.Length; i++)
             {
                 what[i] /= by;
             }
-            
         }
 
+        /// <summary>
+        /// Add a scalar to every element
+        /// </summary>
         public static void ScalarAdd(List<List<double[]>> toWhat, double what)
         {
 
@@ -259,6 +280,9 @@ namespace Helper
 
         }
 
+        /// <summary>
+        /// Divide every element by a scalar
+        /// </summary>
         public static void ScalarDivide(List<List<double[]>> toWhat, double what)
         {
 
@@ -272,6 +296,9 @@ namespace Helper
 
         }
 
+        /// <summary>
+        /// Perform an addition on every element with its represtitive in the second array
+        /// </summary>
         public static void Add(List<List<double[]>> toWhat, List<List<double[]>> what)
         {
             for (int i = 0; i < toWhat.Count; i++)
@@ -285,7 +312,9 @@ namespace Helper
                 }
             }
         }
-
+        /// <summary>
+        /// Perform a substitution on every element with its represtitive in the second array
+        /// </summary>
         public static void Sub(List<List<double[]>> from, List<List<double[]>> what)
         {
             for (int i = 0; i < from.Count; i++)
@@ -300,6 +329,9 @@ namespace Helper
             }
         }
 
+        /// <summary>
+        /// Comparer class that compares two controls by their click priority.
+        /// </summary>
         public class ByPriority : IComparer<ControlBase>
         {
             public int Compare(ControlBase x, ControlBase y)
