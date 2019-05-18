@@ -543,6 +543,7 @@ namespace Four_in_a_row
         {
             if (!bot.IsLearning)
             {
+                Mode = Modes.Quick;
                 Restart(Mode);
                 Thread thread = new Thread(
                 new ThreadStart(StartBot));
