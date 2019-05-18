@@ -16,6 +16,7 @@ namespace Four_in_a_row
         public Rectangle Bounds { get; set; }
         public bool Frozen { get; set; } // Can it move?
         public bool IsVisible { get; set; }
+        public bool IsPhysical { get; set; }
         public Color Color { get; set; }
 
         /// <summary>
@@ -48,6 +49,11 @@ namespace Four_in_a_row
             Size = newSize;
         }
 
+        public void SetLocation(float x, float y)
+        {
+            Location = new Vector2(x, y);
+        }
+
         public virtual void Draw(SpriteBatch sb)
         {
 
@@ -76,11 +82,19 @@ namespace Four_in_a_row
         /// <summary>
         /// Checks whether or not the other <c>Rectangle</c> collides with this game object
         /// </summary>
-        public virtual bool Collides(Rectangle with)
+        public virtual bool Collides(Vector2 location, Vector2 size)
         {
-            if (Bounds.Intersects(with))
-                return true;
-            return false;
+            if (Location.Y + Size.Y < location.Y
+                || Location.Y > location.Y + size.Y)
+            {
+                return false;
+            }
+            if (Location.X + Size.X < location.X
+                 || Location.X > location.X + size.X)
+            {
+                return false;
+            }
+            return true;
         }
 
         /// <summary>
@@ -88,13 +102,8 @@ namespace Four_in_a_row
         /// </summary>
         public virtual bool Collides(GameObject with)
         {
-            if(Collides(with.Bounds))
+            if(Collides(with.Location, with.Size))
                 return true;
-            return false;
-        }
-
-        public virtual bool IsPhysical()
-        {
             return false;
         }
 

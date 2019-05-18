@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System;
 using Learning;
 using System.Threading;
+using Microsoft.Xna.Framework.Input;
 
 namespace TicTacToe
 {
@@ -20,6 +21,7 @@ namespace TicTacToe
         private int ColNum;
         private int ToWin;
         private LearningBot bot;
+        private Players BotPlayer;
 
         /// <summary>
         /// Create a Tic Tac Toe control class that will draw, update etc.
@@ -32,9 +34,10 @@ namespace TicTacToe
         /// <summary>
         /// Attach the bot to the control, after this StartLearn can be called.
         /// </summary>
-        public void AttachBot(LearningBot botAttach)
+        public void AttachBot(LearningBot botAttach, Players botPlayer)
         {
             bot = botAttach;
+            BotPlayer = botPlayer;
         }
 
         /// <summary>
@@ -43,7 +46,7 @@ namespace TicTacToe
         private void StartBot()
         {
             if (!bot.IsSetup)        
-                bot.Setup(this, Players.Player1);
+                bot.Setup(this, BotPlayer);
             bot.Learn(200000, 0.05f, 0.0005f, 0.9f, 0.5f);
             Restart();
         }
@@ -508,6 +511,16 @@ namespace TicTacToe
         public override LearningBot GetBot()
         {
             return bot;
+        }
+
+        /// <summary>
+        /// Handle a keyboard key press
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public override bool HandleKeyPress(Keys key)
+        {
+            return false;
         }
     }
 }

@@ -22,11 +22,11 @@ namespace Four_in_a_row
         }
 
         // Game modes
-        enum Modes
+        public enum Modes
         {
-            Quick, // No gravity but still paints everything
-            Graphical, // Just for fun
-            Learning // No UI at all
+            Quick = 1, // No gravity but still paints everything
+            Graphical = 0, // Just for fun
+            Learning = 2 // No UI at all
         }
 
         private Board board;
@@ -39,6 +39,7 @@ namespace Four_in_a_row
         private Modes Mode { get; set; }
         private int CircleRadius;
         private LearningBot bot;
+        private Players BotPlayer;
 
         /// <summary>
         /// Start the four in a row game. Initializes the board and other variables
@@ -88,7 +89,9 @@ namespace Four_in_a_row
             {
                 fixY = (board.height / RowNum - CircleRadius * 2) / 2;
             }
-            ObjList["NonDrawable"].Add(new GameObject(new Rectangle(0, Game1.w_height + fixY, Game1.w_width, 10)));
+            GameObject floor = new GameObject(new Rectangle(0, Game1.w_height + fixY, Game1.w_width, 10));
+            floor.IsPhysical = true;
+            ObjList["NonDrawable"].Add(floor);
 
             // Add all circle objects and set them as not visible
             float deltaX = board.width / ColNum;
@@ -101,6 +104,7 @@ namespace Four_in_a_row
                     CircleObject newCircle = new CircleObject(location, Color.White, graphicsDevice, CircleRadius);
                     newCircle.IsVisible = false;
                     newCircle.Freeze();
+                    newCircle.IsPhysical = false;
                     ObjList["Drawable"].Add(newCircle);
                 }
             }
@@ -125,6 +129,7 @@ namespace Four_in_a_row
             foreach (GameObject gameObject in ObjList["Drawable"])
             {
                 gameObject.IsVisible = false;
+                gameObject.Speed = Vector2.Zero;
             }
 
             CurrTurn = Players.Player1;
@@ -272,27 +277,38 @@ namespace Four_in_a_row
         /// <param name="pos">The position of the click</param>
         private void GraphicalAdd(int addX, Vector2 pos)
         {
-            /*int fixX = (board.width / ColNum - CircleRadius * 2) / 2;
+            int fixX = (board.width / ColNum - CircleRadius * 2) / 2;
 
             bool add = true;
             foreach (GameObject c in ObjList["Drawable"])
             {
-                if (c.Collides(new Rectangle((int)pos.X, (int)pos.Y, board.width / ColNum, (board.height / RowNum) + 1)))
+                if (c.Collides(new Vector2((int)pos.X + 1, (int)pos.Y + 1), new Vector2(board.width / ColNum - 2, (board.height / RowNum) - 2)))
                     add = false;
             }
             if (add)
             {
+                int y = 0;
+                for (; y < RowNum - 1; y++)
+                {
+                    if (circleList[addX, y] == Players.NoPlayer)
+                    {
+                        break;
+                    }
+                }
+
                 RegisterCircle(addX);
 
                 // Adding the circle object for graphics
                 pos.X += fixX;
-                CircleObject toAdd = new CircleObject(pos, PlayerColor[CurrTurn], graphicsDevice, CircleRadius);
-                toAdd.IsVisible = true;
-                ObjList.Add(toAdd);
-                ObjList[ObjList.Count - 1].EditHitbox(new Vector2(board.width / ColNum - fixX, board.height / RowNum));
+                ObjList["Drawable"][addX * (RowNum - 1) + y].Location = pos;
+                ObjList["Drawable"][addX * (RowNum - 1) + y].Color = PlayerColor[CurrTurn];
+                ObjList["Drawable"][addX * (RowNum - 1) + y].IsVisible = true;
+                ObjList["Drawable"][addX * (RowNum - 1) + y].Frozen = false;
+                ObjList["Drawable"][addX * (RowNum - 1) + y].IsPhysical = true;
+                ObjList["Drawable"][addX * (RowNum - 1) + y].EditHitbox(new Vector2(board.width / ColNum - fixX, board.height / RowNum));
                 NextTurn();
 
-            }*/
+            }
         }
 
         /// <summary>
@@ -537,9 +553,10 @@ namespace Four_in_a_row
         /// <summary>
         /// Attach the bot to the control, after this StartLearn can be called.
         /// </summary>
-        public void AttachBot(LearningBot botAttach)
+        public void AttachBot(LearningBot botAttach, Players botPlayer)
         {
             bot = botAttach;
+            BotPlayer = botPlayer;
         }
 
         /// <summary>
@@ -548,7 +565,7 @@ namespace Four_in_a_row
         private void StartBot()
         {
             if (!bot.IsSetup)
-                bot.Setup(this, Players.Player1);
+                bot.Setup(this, BotPlayer);
             bot.Learn(200000, 0.05f, 0.0005f, 0.9f, 0.5f);
             Restart(Mode);
         }
@@ -574,6 +591,11 @@ namespace Four_in_a_row
         public override LearningBot GetBot()
         {
             return bot;
+        }
+
+        public override bool HandleKeyPress(Keys key)
+        {
+            return false;
         }
     }
 }

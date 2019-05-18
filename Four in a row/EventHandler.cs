@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using System.Linq;
 using static Helper.Helper;
+using Microsoft.Xna.Framework.Input;
 
 namespace Four_in_a_row
 {
@@ -22,6 +23,7 @@ namespace Four_in_a_row
             EventHandle.game = game;
             // Subscribe to the LeftButtonReleased event
             Mousey.LeftButtonReleased += LBReleasedHandle;
+            KeyBoardey.KeyboardPressed += KeyBoardReleaseHandle;
             ByPriority = new ByPriority();
         }
 
@@ -57,6 +59,27 @@ namespace Four_in_a_row
                     }
                 }
             }
+        }
+
+        private static void KeyBoardReleaseHandle(object sender, KeyReleaseEventArgs eventArgs)
+        {
+            Keys key = eventArgs.PressedKey;
+            if (game.IsActive)
+            {
+                // Go over all the controls and send them the button press event
+                List<ControlBase> controls = Game1.Screen.controls.Keys.ToList();
+                controls.Sort(ByPriority);
+
+                foreach (var control in controls)
+                {
+                    if (control.Running)
+                        if(control.HandleKeyPress(key))
+                        {
+                            break;
+                        }
+                }
+            }
+
         }
     }
 }

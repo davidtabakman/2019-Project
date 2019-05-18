@@ -5,13 +5,14 @@ using System.Collections.Generic;
 using Controller;
 using GameCenter;
 using Learning;
+using Microsoft.Xna.Framework.Input;
 
 namespace GUI
 {
     /// <summary>
     /// Common guis
     /// </summary>
-    public class PresetGuis
+    public static class PresetGuis
     {
         private static GraphicsDevice gd { get; set; }
 
@@ -19,11 +20,14 @@ namespace GUI
 
         public static GUIControl InGame = new GUIControl((int)Priorities.GUI);
 
+        public static GUIControl Settings = new GUIControl((int)Priorities.GUI);
+
         private static void SetupMenu()
         {
             Menu.Start(gd, null);
             Menu.AddButton(gd, new Rectangle(0, 0, 120, 25), "Start 4 in a row", Color.Chocolate, "Four Start", new Func<bool>(() => Commands.StartFourInARow(gd)));
             Menu.AddButton(gd, new Rectangle(130, 0, 120, 25), "Start Tic Tac Tow", Color.Chocolate, "Tic Start", new Func<bool>(() => Commands.StartTicTac(gd)));
+            Menu.AddButton(gd, new Rectangle(260, 0, 120, 25), "Settings", Color.Chocolate, "Settings", new Func<bool>(() => Commands.StartSettings()));
         }
 
         private static void SetupInGame()
@@ -37,12 +41,23 @@ namespace GUI
             InGame.AddButton(gd, new Rectangle(520, Game1.w_height - 25, 120, 25), "Load the bot", Color.Chocolate, "Load", new Func<bool>(() => Commands.LoadBot()));
         }
 
+        private static void SetupSettings()
+        {
+            Settings.Start(gd, new int[] { });
+            Settings.AddButton(gd, new Rectangle(0, Game1.w_height - 25, 120, 25), "Exit", Color.Chocolate, "Exit", new Func<bool>(() => Commands.OnPressExit()));
+            Settings.AddButton(gd, new Rectangle(130, Game1.w_height - 25, 250, 25), "Change Four in a Row mode", Color.Chocolate, "SetMode", new Func<bool>(() => Commands.SetFourMode()));
+            Settings.AddButton(gd, new Rectangle(390, Game1.w_height - 25, 120, 25), "Change your turn", Color.Chocolate, "ChangeTurn", new Func<bool>(() => Commands.ChangePlayerTurn()));
+            Settings.AddTextBox(gd, new Rectangle(100, 100, 300, 25), "", Color.Gray, Color.Chocolate, "BotNameTextbox", 30);
+            Settings.AddButton(gd, new Rectangle(100, 130, 300, 25), "Set the load/save bot name", Color.Chocolate, "BotNameButton", new Func<bool>(() => Commands.SetSaveName(((TextBox)Settings.getGUI("BotNameTextbox")).GetText())));
+        }
+
         public static void Setup(GraphicsDevice graphics)
         {
             gd = graphics;
 
             SetupMenu();
             SetupInGame();
+            SetupSettings();
         }
 
         
@@ -97,8 +112,18 @@ namespace GUI
 
         public override void Draw(SpriteBatch spriteBatch)
         {
+            List<GUIBase> ToRemove = new List<GUIBase>();
             foreach (GUIBase gb in GUIList)
-                gb.Draw(spriteBatch);
+            {
+                if (gb.IsAlive)
+                    gb.Draw(spriteBatch);
+                else
+                    ToRemove.Add(gb);
+            }
+            foreach(GUIBase gb in ToRemove)
+            {
+                GUIList.Remove(gb);
+            }
         }
 
         public void DeleteGUIElement(string name)
@@ -124,6 +149,16 @@ namespace GUI
             GUIIDs.Clear();
         }
 
+        public GUIBase getGUI(string guiName)
+        {
+            foreach (GUIBase gui in GUIList)
+            {
+                if (gui.ID == GUIIDs[guiName])
+                    return gui;
+            }
+            return null;
+        }
+
         /// <summary>
         /// Handle a click by transfering it to all the GUIs
         /// </summary>
@@ -145,6 +180,57 @@ namespace GUI
                 }
             }
             return false;
+        }
+
+        /// <summary>
+        /// Show a notification
+        /// </summary>
+        public void ShowNotification(string Message, Vector2 Location, double ShowTime, GameTime gameTime)
+        {
+            GUIList.AddLast(new Notification(Location, Message, ShowTime, gameTime, CountItems, Color.Chocolate));
+            CountItems++;
+        }
+
+        /// <summary>
+        /// Handle a press of a key on the keyboard
+        /// </summary>
+        /// <param name="key">The key pressed</param>
+        public override bool HandleKeyPress(Keys key)
+        {
+            if (GUIList.Count > 0)
+            {
+                LinkedListNode<GUIBase> currNode = GUIList.First;
+                LinkedListNode<GUIBase> nextNode;
+                // When one of the GUI elements claims the mouse press, return true
+                while (currNode != null)
+                {
+                    nextNode = currNode.Next;
+                    if (currNode.Value.ButtonPressed(key))
+                        return true;
+                    currNode = nextNode;
+                }
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Add a textbox to the gui
+        /// </summary>
+        /// <param name="gd"></param>
+        /// <param name="bounds"></param>
+        /// <param name="text"></param>
+        /// <param name="color"></param>
+        /// <param name="name"></param>
+        /// <param name="onPress"></param>
+        public void AddTextBox(GraphicsDevice gd, Rectangle bounds, string text, Color color, Color textColor, string name, int maxChars)
+        {
+            // Add a textbox to the gui list with the id of count of the items added throughout all the running time (means it will allways be unique)
+            GUIList.AddLast(new TextBox(gd, bounds, text, color, textColor, CountItems, true, maxChars));
+            if (!GUIIDs.ContainsKey(name))
+                GUIIDs[name] = CountItems;
+            else
+                throw new ArgumentException();
+            CountItems++;
         }
     }
 }

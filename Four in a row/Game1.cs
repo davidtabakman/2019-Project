@@ -10,6 +10,8 @@ using Learning;
 using Controller;
 using System.Threading;
 using Network;
+using static Four_in_a_row.FourInARowControl;
+using static Controller.GameControlBase;
 
 namespace GameCenter
 {
@@ -24,14 +26,17 @@ namespace GameCenter
     /// </summary>
     public class Commands
     {
-        const string NET_SAVE_NAME = "net1";
+        private static string NET_SAVE_NAME = "net1";
+        private static Modes FourMode = Modes.Quick;
+        private static Players BotTurn = Players.Player1;
+        public static GameTime gameTime { get; set; }
 
         public static bool StartFourInARow(GraphicsDevice GraphicsDevice)
         {
-            int[] args = { 7, 6, 1 }; // Arguments to pass into the game
+            int[] args = { 7, 6, (int)FourMode }; // Arguments to pass into the game
             Game1.Screen.SetGUI(PresetGuis.InGame);
             FourInARowControl fourInARowControl = new FourInARowControl((int)Priorities.Game);
-            fourInARowControl.AttachBot(new DQN());
+            fourInARowControl.AttachBot(new DQN(), BotTurn);
             Game1.Screen.AddControl(fourInARowControl, args);
             Game1.Screen.Start(GraphicsDevice);
             return true;
@@ -42,7 +47,7 @@ namespace GameCenter
             int[] args = { 3, 3, 3 }; // Arguments to pass into the game
             Game1.Screen.SetGUI(PresetGuis.InGame);
             TicTacControl ticTacControl = new TicTacControl((int)Priorities.Game);
-            ticTacControl.AttachBot(new DQN());
+            ticTacControl.AttachBot(new DQN(), BotTurn);
             Game1.Screen.AddControl(ticTacControl, args);
             Game1.Screen.Start(GraphicsDevice);
             return true;
@@ -112,6 +117,53 @@ namespace GameCenter
                 }
             }
             return false;
+        }
+
+        public static bool SetFourMode()
+        {
+            if (FourMode == Modes.Quick)
+            {
+                FourMode = Modes.Graphical;
+                Game1.Screen.GetGUI().ShowNotification("Four in a row mode set to Graphical", new Vector2(300, 300), 1000, gameTime);
+                return true;
+            }
+            if (FourMode == Modes.Graphical)
+            {
+                FourMode = Modes.Quick;
+                Game1.Screen.GetGUI().ShowNotification("Four in a row mode set to Quick", new Vector2(300, 300), 1000, gameTime);
+                return true;
+            }
+            return false;
+
+        }
+
+        public static bool StartSettings()
+        {
+            Game1.Screen.Clear();
+            Game1.Screen.SetGUI(PresetGuis.Settings);
+            return true;
+        }
+
+        public static bool SetSaveName(string newName)
+        {
+            NET_SAVE_NAME = newName;
+            Game1.Screen.GetGUI().ShowNotification("Bot save/load name set to " + newName, new Vector2(300, 300), 1000, gameTime);
+            return true;
+        }
+
+        public static bool ChangePlayerTurn()
+        {
+            if (BotTurn == Players.Player1)
+            {
+                BotTurn = Players.Player2;
+                Game1.Screen.GetGUI().ShowNotification("Player's turn changed to Player1", new Vector2(300, 300), 1000, gameTime);
+            }
+            else
+            {
+                BotTurn = Players.Player1;
+                Game1.Screen.GetGUI().ShowNotification("Player's turn changed to Player2", new Vector2(300, 300), 1000, gameTime);
+            }
+            return true;
         }
     }
     /// <summary>
@@ -205,7 +257,9 @@ namespace GameCenter
 
             // TODO: Add your update logic here
             // Update mouse manager
+            Commands.gameTime = gameTime;
             Mousey.Update();
+            KeyBoardey.Update();
             Screen.Update(gameTime);
 
             if (ShutDown)

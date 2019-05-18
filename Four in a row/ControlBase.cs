@@ -34,6 +34,8 @@ namespace Controller
         public abstract void Draw(SpriteBatch spriteBatch);
         public abstract void Start(GraphicsDevice gd, int[] args);
         public abstract bool HandleClick(Vector2 position);
+        public abstract bool HandleKeyPress(Keys key);
         public abstract void Clear();
+
     }
 }

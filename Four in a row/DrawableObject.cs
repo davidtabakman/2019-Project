@@ -38,11 +38,6 @@ namespace Four_in_a_row
                 sb.Draw(Texture, Location, Color);
         }
 
-        public override bool IsPhysical()
-        {
-            return false;
-        }
-
         public override bool IsDrawable()
         {
             return false;

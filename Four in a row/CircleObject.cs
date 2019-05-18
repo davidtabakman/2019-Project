@@ -39,7 +39,7 @@ namespace Four_in_a_row
                 foreach (GameObject go in gameObjects)
                 {
                     // Check for collision, if collides set the location to be adjacent on the Y axis (above) and freeze
-                    if (go != this && Collides(new Rectangle(new Point((int)go.Location.X - (int)Speed.X, (int)go.Location.Y - (int)Speed.Y), new Point((int)go.Size.X, (int)go.Size.Y))))
+                    if (go.IsPhysical && IsPhysical && go != this && Collides(new Vector2((int)go.Location.X - (int)Speed.X+1, (int)go.Location.Y - (int)Speed.Y+1), new Vector2((int)go.Size.X - 2, (int)go.Size.Y - 2))) 
                     {
                         Location = new Vector2(Location.X, Location.Y - (Location.Y + Size.Y - go.Location.Y));
                         Speed = Vector2.Zero;
@@ -47,12 +47,6 @@ namespace Four_in_a_row
                     }
                 }
             }
-        }
-
-        public override bool IsPhysical()
-        {
-            return true;
-        }
-        
+        }        
     }
 }
