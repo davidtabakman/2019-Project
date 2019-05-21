@@ -529,5 +529,25 @@ namespace TicTacToe
         {
             opponent = bot;
         }
+
+        public override double GetReward(Players forPlayer, State gameState)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override Players CheckWin(State gameState)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void RegisterAction(State s, Actione a, Players player)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override bool IsLegalAction(Actione action, State s)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

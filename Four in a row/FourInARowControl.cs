@@ -8,6 +8,7 @@ using Controller;
 using Learning;
 using System.Threading;
 using System.Linq;
+using static Controller.State;
 
 namespace Four_in_a_row
 {
@@ -41,6 +42,7 @@ namespace Four_in_a_row
         private LearningBot bot;
         private Players BotPlayer;
         private LearningBot opponent;
+        private Bot Enemy;
 
         /// <summary>
         /// Start the four in a row game. Initializes the board and other variables
@@ -57,7 +59,7 @@ namespace Four_in_a_row
             else
                 throw new Exception("Invalid arguments");
 
-            opponent = null;
+            Enemy = new MinimaxBot();
 
             RowNum = args[1] + 1; // 1 is added for future convinience
             ColNum = args[0];
@@ -160,11 +162,15 @@ namespace Four_in_a_row
             // If a bot is loaded, play against it
             if (bot != null && bot.IsLearning)
                 return false;
+            
+
             AddCircle(position);
             if (IsTerminalState())
                 Clean();
             if (bot != null && CurrTurn == bot.BotTurn)
                 bot.TakeAction(this, GetState());
+            if (Enemy != null)
+                Enemy.TakeAction(this, GetState());
             if (IsTerminalState())
                 Clean();
             return true;
@@ -215,6 +221,20 @@ namespace Four_in_a_row
                 if (circleList[collumn, y] == Players.NoPlayer)
                 {
                     circleList[collumn, y] = CurrTurn;
+                    break;
+                }
+            }
+        }
+
+        public override void RegisterAction(State s, Actione a, Players player)
+        {
+
+            // Add the circle to the two dimensional array for checking the wins
+            for (int y = 0; y < RowNum - 1; y++)
+            {
+                if ((Players)s.Board[a.ID, y] == Players.NoPlayer)
+                {
+                    s.Board[a.ID, y] = (double)player;
                     break;
                 }
             }
@@ -451,6 +471,21 @@ namespace Four_in_a_row
             return Players.NoPlayer;
         }
 
+        public override Players CheckWin(State gameState)
+        {
+            Players[,] temp = (Players[,])circleList.Clone();
+            for(int x = 0; x < circleList.GetLength(0); x++)
+            {
+                for(int y = 0; y < circleList.GetLength(1); y++)
+                {
+                    circleList[x, y] = (Players)gameState.Board[x, y];
+                }
+            }
+            Players won = CheckWin();
+            circleList = temp;
+            return won;
+        }
+
         /// <summary>
         /// To be called when the exiting the game. Disposes all the textures
         /// </summary>
@@ -481,12 +516,28 @@ namespace Four_in_a_row
                 return -5;
         }
 
+        public override double GetReward(Players forPlayer, State gameState)
+        {
+            if (CheckWin(gameState) == forPlayer)
+                return 5;
+            else if (CheckWin(gameState) == Players.NoPlayer)
+                return 0;
+            else
+                return -5;
+        }
         /// <summary>
         /// Check if an action is legal in the current game state
         /// </summary>
         public override bool IsLegalAction(Actione action)
         {
             if (circleList[action.ID, RowNum - 2] != Players.NoPlayer)
+                return false;
+            return true;
+        }
+
+        public override bool IsLegalAction(Actione action, State s)
+        {
+            if ((Players)s.Board[action.ID, RowNum - 2] != Players.NoPlayer)
                 return false;
             return true;
         }
@@ -529,11 +580,12 @@ namespace Four_in_a_row
 
         public override bool IsTerminalState(State s)
         {
-            if (CheckWin() == Players.Player1 || NoMovesLeft())
+
+            if (CheckWin(s) == Players.Player1 || NoMovesLeft())
             {
                 return true;
             }
-            else if (CheckWin() == Players.NoPlayer)
+            else if (CheckWin(s) == Players.NoPlayer)
                 return false;
             else
                 return true;
@@ -606,5 +658,7 @@ namespace Four_in_a_row
         {
             return false;
         }
+
+
     }
 }
