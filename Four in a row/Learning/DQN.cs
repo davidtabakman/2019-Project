@@ -148,7 +148,8 @@ namespace Learning
 
                     double[] target = new double[1] { t };
                     Q_Targets.Add(new Tuple<double[], double[]>(CreateInputArray(transition.s.Board, transition.a.ID), ApplyFunction(target, Activation_Functions.Sigmoid.Function)));
-                    addLoss += 0.5 * Math.Pow(ApplyFunction(target, Activation_Functions.Sigmoid.Function)[0] - NeuralNet.Activations[NeuralNet.Activations.Count - 1][0], 2);
+                    OldNeuralNet.Feed(CreateInputArray(transition.s.Board, transition.a.ID));
+                    addLoss += 0.5 * Math.Pow(ApplyFunction(target, Activation_Functions.Sigmoid.Function)[0] - OldNeuralNet.Activations[NeuralNet.Activations.Count - 1][0], 2);
                 }
                 addLoss /= miniBatch.Count;
                 loss += addLoss;
@@ -254,7 +255,7 @@ namespace Learning
         {
             base.Setup(control, player);
             rand = new Random();
-            Dimensions = new List<int> { control.FeatureNum + control.ActionNum, 70, 30, 1 };
+            Dimensions = new List<int> { control.FeatureNum + control.ActionNum, 90, 50, 1 };
             if(NeuralNet == null)
                 NeuralNet = new NetworkVectors(Dimensions);
             OldNeuralNet = (NetworkVectors)NeuralNet.Clone();

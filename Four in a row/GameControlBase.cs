@@ -98,5 +98,6 @@ namespace Controller
         public abstract Players CheckWin();
         public abstract void SetBot(LearningBot bot);
         public abstract LearningBot GetBot();
+        public abstract void SetOpponent(LearningBot bot);
     }
 }

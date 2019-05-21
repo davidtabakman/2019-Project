@@ -27,6 +27,7 @@ namespace GameCenter
     public class Commands
     {
         private static string NET_SAVE_NAME = "net1";
+        private static string OPPONENT_SAVE_NAME = "opponent";
         private static Modes FourMode = Modes.Quick;
         private static Players BotTurn = Players.Player1;
         public static GameTime gameTime { get; set; }
@@ -68,6 +69,22 @@ namespace GameCenter
                 {
                     GameControlBase CastControl = (GameControlBase)control;
                     CastControl.StartLearn();
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        internal static bool LoadOpponent()
+        {
+            foreach (ControlBase control in Game1.Screen.controls.Keys)
+            {
+                if (control.IsLearnable)
+                {
+                    GameControlBase CastControl = (GameControlBase)control;
+                    LearningBot bot = NetworkLoader.LoadLearningBot(OPPONENT_SAVE_NAME);
+                    bot.Setup(CastControl, bot.BotTurn);
+                    CastControl.SetOpponent(bot);
                     return true;
                 }
             }
@@ -148,6 +165,13 @@ namespace GameCenter
         {
             NET_SAVE_NAME = newName;
             Game1.Screen.GetGUI().ShowNotification("Bot save/load name set to " + newName, new Vector2(300, 300), 1000, gameTime);
+            return true;
+        }
+
+        public static bool SetOpponentName(string newName)
+        {
+            OPPONENT_SAVE_NAME = newName;
+            Game1.Screen.GetGUI().ShowNotification("Opponent save/load name set to " + newName, new Vector2(300, 300), 1000, gameTime);
             return true;
         }
 

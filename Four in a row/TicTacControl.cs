@@ -21,6 +21,7 @@ namespace TicTacToe
         private int ColNum;
         private int ToWin;
         private LearningBot bot;
+        private LearningBot opponent;
         private Players BotPlayer;
 
         /// <summary>
@@ -47,7 +48,7 @@ namespace TicTacToe
         {
             if (!bot.IsSetup)        
                 bot.Setup(this, BotPlayer);
-            bot.Learn(200000, 0.05f, 0.0005f, 0.9f, 0.5f);
+            bot.Learn(200000, 0.05f, 0.0005f, 0.9f, 0.5f, opponent);
             Restart();
         }
 
@@ -104,6 +105,7 @@ namespace TicTacToe
         /// <param name="args">Game parameters: Number of collumns, number of rows, how many in a row is needed to win</param>
         public override void Start(GraphicsDevice gd, int[] args)
         {
+            opponent = null;
             RowNum = args[0];
             ColNum = args[1];
             ToWin = args[2];
@@ -521,6 +523,11 @@ namespace TicTacToe
         public override bool HandleKeyPress(Keys key)
         {
             return false;
+        }
+
+        public override void SetOpponent(LearningBot bot)
+        {
+            opponent = bot;
         }
     }
 }

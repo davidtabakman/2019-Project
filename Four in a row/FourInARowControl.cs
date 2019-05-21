@@ -40,6 +40,7 @@ namespace Four_in_a_row
         private int CircleRadius;
         private LearningBot bot;
         private Players BotPlayer;
+        private LearningBot opponent;
 
         /// <summary>
         /// Start the four in a row game. Initializes the board and other variables
@@ -55,6 +56,8 @@ namespace Four_in_a_row
                 Mode = Modes.Learning;
             else
                 throw new Exception("Invalid arguments");
+
+            opponent = null;
 
             RowNum = args[1] + 1; // 1 is added for future convinience
             ColNum = args[0];
@@ -567,7 +570,7 @@ namespace Four_in_a_row
         {
             if (!bot.IsSetup)
                 bot.Setup(this, BotPlayer);
-            bot.Learn(200000, 0.05f, 0.0005f, 0.9f, 0.5f);
+            bot.Learn(200000, 0.05f, 0.0005f, 0.9f, 0.5f, opponent);
             Restart(Mode);
         }
 
@@ -592,6 +595,11 @@ namespace Four_in_a_row
         public override LearningBot GetBot()
         {
             return bot;
+        }
+
+        public override void SetOpponent(LearningBot bot)
+        {
+            opponent = bot;
         }
 
         public override bool HandleKeyPress(Keys key)

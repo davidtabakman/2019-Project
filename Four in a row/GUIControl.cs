@@ -39,6 +39,7 @@ namespace GUI
             InGame.AddButton(gd, new Rectangle(260, Game1.w_height - 25, 120, 25), "Stop Learning", Color.Chocolate, "Stop", new Func<bool>(() => Commands.StopLearn()));
             InGame.AddButton(gd, new Rectangle(390, Game1.w_height - 25, 120, 25), "Save the bot", Color.Chocolate, "Save", new Func<bool>(() => Commands.SaveBot()));
             InGame.AddButton(gd, new Rectangle(520, Game1.w_height - 25, 120, 25), "Load the bot", Color.Chocolate, "Load", new Func<bool>(() => Commands.LoadBot()));
+            InGame.AddButton(gd, new Rectangle(650, Game1.w_height - 25, 120, 25), "Load opponent", Color.Chocolate, "LoadOpp", new Func<bool>(() => Commands.LoadOpponent()));
         }
 
         private static void SetupSettings()
@@ -49,6 +50,8 @@ namespace GUI
             Settings.AddButton(gd, new Rectangle(390, Game1.w_height - 25, 120, 25), "Change your turn", Color.Chocolate, "ChangeTurn", new Func<bool>(() => Commands.ChangePlayerTurn()));
             Settings.AddTextBox(gd, new Rectangle(100, 100, 300, 25), "", Color.Gray, Color.Chocolate, "BotNameTextbox", 30);
             Settings.AddButton(gd, new Rectangle(100, 130, 300, 25), "Set the load/save bot name", Color.Chocolate, "BotNameButton", new Func<bool>(() => Commands.SetSaveName(((TextBox)Settings.getGUI("BotNameTextbox")).GetText())));
+            Settings.AddTextBox(gd, new Rectangle(450, 100, 300, 25), "", Color.Gray, Color.Chocolate, "OpponentNameTextbox", 30);
+            Settings.AddButton(gd, new Rectangle(450, 130, 300, 25), "Set the load/save opponent name", Color.Chocolate, "OpponentNameButton", new Func<bool>(() => Commands.SetOpponentName(((TextBox)Settings.getGUI("OpponentNameTextbox")).GetText())));
         }
 
         public static void Setup(GraphicsDevice graphics)
