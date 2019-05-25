@@ -112,6 +112,24 @@ namespace Network
         {
             return activation - expected;
         }
+
+        /// <summary>
+        /// Copies all the variables into the given neural network
+        /// </summary>
+        internal void Copy(NetworkVectors into)
+        {
+            for (int layer = 1; layer < Dimensions.Count; layer++)
+            {                
+                for (int neuron = 0; neuron < Weights[layer-1].Count; neuron++)
+                {
+                    for (int connection = 0; connection < Weights[layer-1][neuron].Length; connection++)
+                    {
+                        into.Weights[layer-1][neuron][connection] = Weights[layer-1][neuron][connection];
+                    }                    
+                }
+            }
+        }
+
         /// <summary>
         /// Performs a backpropagation sweep to calculate the gradient, using the chain rule, using sigmoid function as activation function
         /// </summary>

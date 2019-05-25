@@ -83,6 +83,12 @@ namespace Learning
             Actione action;
             double loss = 0;
 
+            OldNeuralNet = (NetworkVectors)NeuralNet.Clone();
+            double[] Target = new double[NeuralNet.WeightedSums[NeuralNet.Activations.Count - 1].Length];
+            double[] Result = new double[NeuralNet.WeightedSums[NeuralNet.Activations.Count - 1].Length];
+            double[] target = new double[1];
+            double addLoss = 0;
+
             while (current_epoche < EpocheNumber && IsLearning)
             {
 
@@ -117,7 +123,7 @@ namespace Learning
                 // If the x-th iteration, switch the old neural network with the new one
                 if (iterations % 100 == 0 && iterations != 0)
                 {
-                    OldNeuralNet = (NetworkVectors)NeuralNet.Clone();
+                    NeuralNet.Copy(OldNeuralNet);
                 }
                 iterations++;
 
@@ -126,10 +132,9 @@ namespace Learning
 
                 // Compute Q-Learning targets
                 Q_Targets.Clear();
-                double[] Target = new double[NeuralNet.WeightedSums[NeuralNet.Activations.Count - 1].Length];
-                double[] Result = new double[NeuralNet.WeightedSums[NeuralNet.Activations.Count - 1].Length];
+
                 Zero(Gradients);
-                double addLoss = 0;
+                addLoss = 0;
                 foreach (Transition transition in miniBatch)
                 {
                     int maxID = getMaxAction(Control, transition.s1, false).ID; // Get the best action of the new state
@@ -146,7 +151,7 @@ namespace Learning
                         t = transition.Reward + DiscountRate * OldNeuralNet.WeightedSums[OldNeuralNet.Activations.Count - 1][0];
                     }
 
-                    double[] target = new double[1] { t };
+                    target[0] = t;
                     Q_Targets.Add(new Tuple<double[], double[]>(CreateInputArray(transition.s.Board, transition.a.ID), ApplyFunction(target, Activation_Functions.Sigmoid.Function)));
                     OldNeuralNet.Feed(CreateInputArray(transition.s.Board, transition.a.ID));
                     addLoss += 0.5 * Math.Pow(ApplyFunction(target, Activation_Functions.Sigmoid.Function)[0] - OldNeuralNet.Activations[NeuralNet.Activations.Count - 1][0], 2);
@@ -255,7 +260,7 @@ namespace Learning
         {
             base.Setup(control, player);
             rand = new Random();
-            Dimensions = new List<int> { control.FeatureNum + control.ActionNum, 90, 50, 1 };
+            Dimensions = new List<int> { control.FeatureNum + control.ActionNum, 130, 70, 1 };
             if(NeuralNet == null)
                 NeuralNet = new NetworkVectors(Dimensions);
             OldNeuralNet = (NetworkVectors)NeuralNet.Clone();

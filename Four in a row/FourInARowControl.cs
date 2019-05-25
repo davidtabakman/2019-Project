@@ -59,7 +59,9 @@ namespace Four_in_a_row
             else
                 throw new Exception("Invalid arguments");
 
-            Enemy = new MinimaxBot();
+            MinimaxBot enemy = new MinimaxBot();
+            enemy.SetMaxDepth(1);
+            Enemy = enemy;
 
             RowNum = args[1] + 1; // 1 is added for future convinience
             ColNum = args[0];
@@ -169,7 +171,7 @@ namespace Four_in_a_row
                 Clean();
             if (bot != null && CurrTurn == bot.BotTurn)
                 bot.TakeAction(this, GetState());
-            if (Enemy != null)
+            else if (Enemy != null)
                 Enemy.TakeAction(this, GetState());
             if (IsTerminalState())
                 Clean();
@@ -283,8 +285,8 @@ namespace Four_in_a_row
             Vector2 pos = Vector2.Zero;
             pos.X = newX + fixX;
             pos.Y = newY + fixY;
-            CircleObject toAdd = new CircleObject(pos, PlayerColor[CurrTurn], graphicsDevice, CircleRadius);
-            toAdd.IsVisible = true;
+            //CircleObject toAdd = new CircleObject(pos, PlayerColor[CurrTurn], graphicsDevice, CircleRadius);
+            //toAdd.IsVisible = true;
             //ObjList["Drawable"].Add(toAdd);
             ObjList["Drawable"][addX * (RowNum - 1) + addY - 1].IsVisible = true;
             ObjList["Drawable"][addX * (RowNum - 1) + addY - 1].Color = PlayerColor[CurrTurn];
@@ -622,7 +624,7 @@ namespace Four_in_a_row
         {
             if (!bot.IsSetup)
                 bot.Setup(this, BotPlayer);
-            bot.Learn(200000, 0.05f, 0.0005f, 0.9f, 0.5f, opponent);
+            bot.Learn(200000, 0.05f, 0.0005f, 0.9f, 0.5f, Enemy);
             Restart(Mode);
         }
 
