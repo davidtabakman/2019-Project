@@ -14,6 +14,7 @@ namespace Learning
         private const int ReplayMemSize = 10000;
         private List<Transition> ReplayMem; // Replay memory
         private double Epsilon; // The explore-exploit variable
+        private bool IsMultidimensionalOutput; // Is the input state and action, or the input is just the state
 
         /// <summary>
         /// A transition structure that is used in the DQN Learning memory: state - action - reward - newstate.
@@ -37,9 +38,9 @@ namespace Learning
         private NetworkVectors NeuralNet; // The neural network that will be constantly updated
         private NetworkVectors OldNeuralNet; // The neural network that decisions will be taken by (polity iteration)
 
-        public DQN() : base()
+        public DQN(bool IsMultidimensionalOutput) : base()
         {
-
+            this.IsMultidimensionalOutput = IsMultidimensionalOutput;
         }
 
         /// <summary>
@@ -86,7 +87,11 @@ namespace Learning
             OldNeuralNet = (NetworkVectors)NeuralNet.Clone();
             double[] Target = new double[NeuralNet.WeightedSums[NeuralNet.Activations.Count - 1].Length];
             double[] Result = new double[NeuralNet.WeightedSums[NeuralNet.Activations.Count - 1].Length];
-            double[] target = new double[1];
+            double[] target;
+            if (!IsMultidimensionalOutput)
+                target = new double[1];
+            else
+                target = new double[NeuralNet.WeightedSums[NeuralNet.Activations.Count - 1].Length];
             double addLoss = 0;
 
             while (current_epoche < EpocheNumber && IsLearning)
@@ -137,24 +142,52 @@ namespace Learning
                 addLoss = 0;
                 foreach (Transition transition in miniBatch)
                 {
-                    int maxID = getMaxAction(Control, transition.s1, false).ID; // Get the best action of the new state
-                    OldNeuralNet.Feed(CreateInputArray(transition.s1.Board, maxID)); // Compute its Q value
-
-                    // Bellman equation: Q += (Q' * DiscountRate + R) * learning rate
-                    double t = 0;
-                    if (Control.IsTerminalState(transition.s1))
-                    {
-                        t = transition.Reward;
-                    }
+                    int maxID;
+                    if (IsMultidimensionalOutput)
+                        OldNeuralNet.Feed(CreateInputArray(transition.s1.Board)); // Compute its Q value
                     else
                     {
-                        t = transition.Reward + DiscountRate * OldNeuralNet.WeightedSums[OldNeuralNet.Activations.Count - 1][0];
+                        maxID = getMaxAction(Control, transition.s1, false).ID; // Get the best action of the new state
+                        OldNeuralNet.Feed(CreateInputArray(transition.s1.Board, maxID));
                     }
 
-                    target[0] = t;
-                    Q_Targets.Add(new Tuple<double[], double[]>(CreateInputArray(transition.s.Board, transition.a.ID), ApplyFunction(target, Activation_Functions.Sigmoid.Function)));
-                    OldNeuralNet.Feed(CreateInputArray(transition.s.Board, transition.a.ID));
-                    addLoss += 0.5 * Math.Pow(ApplyFunction(target, Activation_Functions.Sigmoid.Function)[0] - OldNeuralNet.Activations[NeuralNet.Activations.Count - 1][0], 2);
+                    // Bellman equation: Q += (Q' * DiscountRate + R) * learning rate
+                    if (!IsMultidimensionalOutput)
+                    {
+                        double t = 0;
+                        if (Control.IsTerminalState(transition.s1))
+                        {
+                            t = transition.Reward;
+                        }
+                        else
+                        {
+                            t = transition.Reward + DiscountRate * OldNeuralNet.WeightedSums[OldNeuralNet.Activations.Count - 1][0];
+                        }
+
+                        target[0] = t;
+                        Q_Targets.Add(new Tuple<double[], double[]>(CreateInputArray(transition.s.Board, transition.a.ID), ApplyFunction(target, Activation_Functions.Sigmoid.Function)));
+                        OldNeuralNet.Feed(CreateInputArray(transition.s.Board, transition.a.ID));
+                        addLoss += 0.5 * Math.Pow(ApplyFunction(target, Activation_Functions.Sigmoid.Function)[0] - OldNeuralNet.Activations[NeuralNet.Activations.Count - 1][0], 2);
+                    } else
+                    {
+                        double t = 0;
+                        if (Control.IsTerminalState(transition.s1))
+                        {
+                            t = transition.Reward;
+                        }
+                        else
+                        {
+                            t = transition.Reward + DiscountRate * Max(OldNeuralNet.WeightedSums[OldNeuralNet.Activations.Count - 1]);
+                        }
+                        OldNeuralNet.Feed(CreateInputArray(transition.s.Board));
+                        for (int i = 0; i < OldNeuralNet.WeightedSums[OldNeuralNet.Activations.Count - 1].Length; i++)
+                        {
+                            target[i] = OldNeuralNet.WeightedSums[OldNeuralNet.Activations.Count - 1][i];
+                        }
+                        target[transition.a.ID] = t;
+                        Q_Targets.Add(new Tuple<double[], double[]>(CreateInputArray(transition.s.Board), ApplyFunction(target, Activation_Functions.Sigmoid.Function)));
+                        addLoss += 0.5 * Math.Pow(ApplyFunction(target, Activation_Functions.Sigmoid.Function)[transition.a.ID] - OldNeuralNet.Activations[NeuralNet.Activations.Count - 1][transition.a.ID], 2);
+                    }
                 }
                 addLoss /= miniBatch.Count;
                 loss += addLoss;
@@ -197,26 +230,53 @@ namespace Learning
             int maxID = 0;
             double max = 0;
             // Regular max searching by value
-            for (int id = 0; id < control.ActionNum; id++)
+            if (IsMultidimensionalOutput)
             {
-                NeuralNet.Feed(CreateInputArray(state.Board, id));
-                
-                    if (NeuralNet.Activations[NeuralNet.Activations.Count - 1][0] > max)
-                    { 
+                NeuralNet.Feed(CreateInputArray(state.Board));
+                for (int id = 0; id < control.ActionNum; id++)
+                {
+                    if (NeuralNet.Activations[NeuralNet.Activations.Count - 1][id] > max)
+                    {
                         if (isLegal)
                         {
-                            if(control.IsLegalAction(new Actione(id)))
+                            if (control.IsLegalAction(new Actione(id)))
+                            {
+                                maxID = id;
+                                max = NeuralNet.Activations[NeuralNet.Activations.Count - 1][id];
+                            }
+                        }
+                        else
+                        {
+                            maxID = id;
+                            max = NeuralNet.Activations[NeuralNet.Activations.Count - 1][id];
+                        }
+                    }
+                }
+            }
+            else
+            {
+                for (int id = 0; id < control.ActionNum; id++)
+                {
+                    NeuralNet.Feed(CreateInputArray(state.Board, id));
+
+                    if (NeuralNet.Activations[NeuralNet.Activations.Count - 1][0] > max)
+                    {
+                        if (isLegal)
+                        {
+                            if (control.IsLegalAction(new Actione(id)))
                             {
                                 maxID = id;
                                 max = NeuralNet.Activations[NeuralNet.Activations.Count - 1][0];
                             }
-                        } else
+                        }
+                        else
                         {
                             maxID = id;
                             max = NeuralNet.Activations[NeuralNet.Activations.Count - 1][0];
                         }
                     }
-                
+
+                }
             }
             return new Actione(maxID);
         }
@@ -251,6 +311,34 @@ namespace Learning
         }
 
         /// <summary>
+        /// Transform a two dimensional baord array to a one dimensional input array for a neural network of a specific shape
+        /// </summary>
+        /// <param name="board"></param>
+        /// <returns>Each tile corresponds to three input neurons: first is Player1, second is Player2, third is NoPlayer.
+        /// </returns>
+        private double[] CreateInputArray(double[,] board)
+        {
+            int x_len = board.GetLength(0);
+            int y_len = board.GetLength(1);
+
+            double[] Input = CreateZero(x_len * y_len * 3);
+            for (int x = 0; x < x_len; x++)
+            {
+                for (int y = 0; y < y_len; y++)
+                {
+                    if (board[x, y] == (int)GameControlBase.Players.Player1)
+                        Input[(x * y_len + y) * 3] = 1;
+                    else if (board[x, y] == (int)GameControlBase.Players.Player2)
+                        Input[(x * y_len + y) * 3 + 1] = 1;
+                    else
+                        Input[(x * y_len + y) * 3 + 2] = 1;
+                }
+            }
+
+            return Input;
+        }
+
+        /// <summary>
         /// Initialize some learning and technical variables and ready the bot for learning.
         /// Has to be called before Learn()
         /// </summary>
@@ -260,8 +348,11 @@ namespace Learning
         {
             base.Setup(control, player);
             rand = new Random();
-            Dimensions = new List<int> { control.FeatureNum + control.ActionNum, 130, 70, 1 };
-            if(NeuralNet == null)
+            if (IsMultidimensionalOutput)
+                Dimensions = new List<int> { control.FeatureNum, 130, 70, control.ActionNum };
+            else
+                Dimensions = new List<int> { control.FeatureNum + control.ActionNum, 130, 70, 1 };
+            if (NeuralNet == null)
                 NeuralNet = new NetworkVectors(Dimensions);
             OldNeuralNet = (NetworkVectors)NeuralNet.Clone();
             Control = control;
@@ -285,12 +376,14 @@ namespace Learning
         {
             info.AddValue("Network", NeuralNet);
             info.AddValue("Player", BotTurn);
+            info.AddValue("Mode", IsMultidimensionalOutput);
         }
 
         // Constructor for serialization
         public DQN(SerializationInfo info, StreamingContext context)
         {
             NeuralNet = (NetworkVectors)info.GetValue("Network", typeof(NetworkVectors));
+            IsMultidimensionalOutput = (bool)info.GetValue("Mode", typeof(bool));
             BotTurn = (GameControlBase.Players)info.GetValue("Player", typeof(GameControlBase.Players));
         }
     }

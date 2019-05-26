@@ -37,7 +37,7 @@ namespace GameCenter
             int[] args = { 7, 6, (int)FourMode }; // Arguments to pass into the game
             Game1.Screen.SetGUI(PresetGuis.InGame);
             FourInARowControl fourInARowControl = new FourInARowControl((int)Priorities.Game);
-            fourInARowControl.AttachBot(new DQN(), BotTurn);
+            fourInARowControl.AttachBot(new DQN(false), BotTurn);
             Game1.Screen.AddControl(fourInARowControl, args);
             Game1.Screen.Start(GraphicsDevice);
             return true;
@@ -48,7 +48,7 @@ namespace GameCenter
             int[] args = { 3, 3, 3 }; // Arguments to pass into the game
             Game1.Screen.SetGUI(PresetGuis.InGame);
             TicTacControl ticTacControl = new TicTacControl((int)Priorities.Game);
-            ticTacControl.AttachBot(new DQN(), BotTurn);
+            ticTacControl.AttachBot(new DQN(false), BotTurn);
             Game1.Screen.AddControl(ticTacControl, args);
             Game1.Screen.Start(GraphicsDevice);
             return true;

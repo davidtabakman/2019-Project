@@ -624,7 +624,7 @@ namespace Four_in_a_row
         {
             if (!bot.IsSetup)
                 bot.Setup(this, BotPlayer);
-            bot.Learn(200000, 0.05f, 0.0005f, 0.9f, 0.5f, Enemy);
+            bot.Learn(200000, 0.05f, 0.0005f, 0.9f, 0.5f);
             Restart(Mode);
         }
 
