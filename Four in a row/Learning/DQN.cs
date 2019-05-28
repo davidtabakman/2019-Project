@@ -38,6 +38,10 @@ namespace Learning
         private NetworkVectors NeuralNet; // The neural network that will be constantly updated
         private NetworkVectors OldNeuralNet; // The neural network that decisions will be taken by (polity iteration)
 
+        /// <summary>
+        /// Create a new Deep Q Network learning bot
+        /// </summary>
+        /// <param name="IsMultidimensionalOutput">If true the input is just the state, if false its the state and the action</param>
         public DQN(bool IsMultidimensionalOutput) : base()
         {
             this.IsMultidimensionalOutput = IsMultidimensionalOutput;
@@ -88,7 +92,7 @@ namespace Learning
             double[] Target = new double[NeuralNet.WeightedSums[NeuralNet.Activations.Count - 1].Length];
             double[] Result = new double[NeuralNet.WeightedSums[NeuralNet.Activations.Count - 1].Length];
             double[] target;
-            if (!IsMultidimensionalOutput)
+            if (!IsMultidimensionalOutput) // Is the output the Q value of just one action, or of all actions
                 target = new double[1];
             else
                 target = new double[NeuralNet.WeightedSums[NeuralNet.Activations.Count - 1].Length];
@@ -143,16 +147,16 @@ namespace Learning
                 foreach (Transition transition in miniBatch)
                 {
                     int maxID;
-                    if (IsMultidimensionalOutput)
-                        OldNeuralNet.Feed(CreateInputArray(transition.s1.Board)); // Compute its Q value
+                    if (IsMultidimensionalOutput) 
+                        OldNeuralNet.Feed(CreateInputArray(transition.s1.Board)); // Compute the Q value of all the actions in the given state
                     else
                     {
                         maxID = getMaxAction(Control, transition.s1, false).ID; // Get the best action of the new state
-                        OldNeuralNet.Feed(CreateInputArray(transition.s1.Board, maxID));
+                        OldNeuralNet.Feed(CreateInputArray(transition.s1.Board, maxID)); // Compute its Q value
                     }
 
                     // Bellman equation: Q += (Q' * DiscountRate + R) * learning rate
-                    if (!IsMultidimensionalOutput)
+                    if (!IsMultidimensionalOutput) // If the output is value of just one action
                     {
                         double t = 0;
                         if (Control.IsTerminalState(transition.s1))
@@ -168,7 +172,7 @@ namespace Learning
                         Q_Targets.Add(new Tuple<double[], double[]>(CreateInputArray(transition.s.Board, transition.a.ID), ApplyFunction(target, Activation_Functions.Sigmoid.Function)));
                         OldNeuralNet.Feed(CreateInputArray(transition.s.Board, transition.a.ID));
                         addLoss += 0.5 * Math.Pow(ApplyFunction(target, Activation_Functions.Sigmoid.Function)[0] - OldNeuralNet.Activations[NeuralNet.Activations.Count - 1][0], 2);
-                    } else
+                    } else // If the output is the value of all the actions
                     {
                         double t = 0;
                         if (Control.IsTerminalState(transition.s1))
@@ -230,7 +234,7 @@ namespace Learning
             int maxID = 0;
             double max = 0;
             // Regular max searching by value
-            if (IsMultidimensionalOutput)
+            if (IsMultidimensionalOutput) 
             {
                 NeuralNet.Feed(CreateInputArray(state.Board));
                 for (int id = 0; id < control.ActionNum; id++)
@@ -283,6 +287,7 @@ namespace Learning
             
         /// <summary>
         /// Transform a two dimensional baord array to a one dimensional input array for a neural network of a specific shape
+        /// It also contains the action
         /// </summary>
         /// <param name="board"></param>
         /// <returns>Each tile corresponds to three input neurons: first is Player1, second is Player2, third is NoPlayer.

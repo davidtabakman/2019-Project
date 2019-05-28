@@ -41,6 +41,7 @@ namespace Four_in_a_row
         private int CircleRadius;
         private Bot Enemy;
 
+
         /// <summary>
         /// Start the four in a row game. Initializes the board and other variables
         /// </summary>
@@ -612,7 +613,7 @@ namespace Four_in_a_row
         {
             if (!bot.IsSetup)
                 bot.Setup(this, BotPlayer);
-            bot.Learn(200000, 0.05f, 0.0005f, 0.9f, 0.5f);
+            bot.Learn(200000, 0.05f, 0.0005f, 0.9f, 0.5f, Enemy);
             Restart(Mode);
         }
 
