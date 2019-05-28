@@ -14,10 +14,9 @@ namespace Controller
     /// </summary>
     public abstract class ControlBase
     {
-        public bool Running;
+        
+        public bool Running { get; protected set; }
         public bool IsLearnable { get; protected set; }
-        public int StateNum { get; protected set; }
-        public int ActionNum { get; protected set; }
         public int ClickPriority { get; set; } // The higher this is, the lower the priority
 
         /// <summary>

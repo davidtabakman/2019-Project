@@ -1,0 +1,40 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="Learning.Bot" Collapsed="true">
+    <Position X="2.5" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAABAAA=</HashCode>
+      <FileName>BotBase.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Learning.LearningBot" Collapsed="true">
+    <Position X="1.5" Y="3.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AEBAAIAESEAAAAAAIAAAIQAgAAAAAAABIAAAoEAAAAA=</HashCode>
+      <FileName>BotBase.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Learning.MinimaxBot" Collapsed="true">
+    <Position X="3.75" Y="3.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAIAACAAAAAAAACAAAKAAAAAAAAAAAAAAAAABAAA=</HashCode>
+      <FileName>MinimaxBot.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Learning.DQN" Collapsed="true">
+    <Position X="0.5" Y="5.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAQACAAAAAAAAAAAQAIgQAAQAAAAAAgAggMBAAA=</HashCode>
+      <FileName>Learning\DQN.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Learning.Q_Learning" Collapsed="true">
+    <Position X="2.75" Y="5.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAACAAAAAAAAAAAAAAhAAABAAAAAJAAgAABAAA=</HashCode>
+      <FileName>Learning\Learning.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

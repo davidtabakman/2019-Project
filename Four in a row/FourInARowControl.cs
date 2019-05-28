@@ -32,16 +32,13 @@ namespace Four_in_a_row
 
         private Board board;
         private Dictionary<string, List<GameObject>> ObjList; // Objects to draw
-        private GraphicsDevice graphicsDevice { get; set; }
+        private GraphicsDevice graphicsDevice;
         private Players[,] circleList; // Array for use in win checking and learning etc. Doesn't have anything to do with graphics
         private Dictionary<Players, Color> PlayerColor; // Colors of the players
-        private int RowNum { get; set; }
-        private int ColNum { get; set; }
-        private Modes Mode { get; set; }
+        private int RowNum;
+        private int ColNum;
+        private Modes Mode;
         private int CircleRadius;
-        private LearningBot bot;
-        private Players BotPlayer;
-        private LearningBot opponent;
         private Bot Enemy;
 
         /// <summary>
@@ -60,8 +57,9 @@ namespace Four_in_a_row
                 throw new Exception("Invalid arguments");
 
             MinimaxBot enemy = new MinimaxBot();
-            enemy.SetMaxDepth(1);
+            enemy.SetMaxDepth(8);
             Enemy = enemy;
+            PlayAgainst = Against.Bot;
 
             RowNum = args[1] + 1; // 1 is added for future convinience
             ColNum = args[0];
@@ -164,17 +162,12 @@ namespace Four_in_a_row
             // If a bot is loaded, play against it
             if (bot != null && bot.IsLearning)
                 return false;
-            
-
+            if (PlayAgainst != Against.Noone && CurrTurn == BotPlayer)
+                return true;
             AddCircle(position);
             if (IsTerminalState())
                 Clean();
-            if (bot != null && CurrTurn == bot.BotTurn)
-                bot.TakeAction(this, GetState());
-            else if (Enemy != null)
-                Enemy.TakeAction(this, GetState());
-            if (IsTerminalState())
-                Clean();
+            
             return true;
         }
 
@@ -190,20 +183,37 @@ namespace Four_in_a_row
             {
                 c.Update(obj);
             }
+
+            if (CurrTurn == BotPlayer)
+            {
+                bool ActionTaken = false;
+                if (bot != null && bot.IsLearning)
+                    return;
+                else if (PlayAgainst == Against.Minimax && Enemy != null)
+                {
+                    Enemy.TakeAction(this, GetState());
+                    ActionTaken = true;
+                }
+                else if (PlayAgainst == Against.Bot && bot.IsSetup)
+                {
+                    bot.TakeAction(this, GetState());
+                    ActionTaken = true;
+                }
+                if (IsTerminalState() && ActionTaken)
+                    Clean();
+            }
         }
 
         public override void Draw(SpriteBatch sb)
         {
             if (Mode != Modes.Learning)
             {
-                IsDrawing = true;
                 // Draw all the drawable objects
                 for (int i = 0; i < ObjList["Drawable"].Count; i++)
                 {
                     GameObject c = ObjList["Drawable"][i];
                     c.Draw(sb);
                 }
-                IsDrawing = false;
 
                 // Draw the board
                 board.Draw(sb);
@@ -552,16 +562,7 @@ namespace Four_in_a_row
             QuickAdd(action.ID);
         }
 
-        public override bool IsTerminalState()
-        {
-            if (NoMovesLeft())
-                return true;
-            else if (CheckWin() != Players.NoPlayer)
-                return true;
-            return false;
-        }
-
-        private bool NoMovesLeft()
+        protected override bool NoMovesLeft()
         {
             for(int x = 0; x < ColNum; x++)
             {
@@ -578,19 +579,6 @@ namespace Four_in_a_row
         {
             if (IsTerminalState())
                 Restart(Mode);
-        }
-
-        public override bool IsTerminalState(State s)
-        {
-
-            if (CheckWin(s) == Players.Player1 || NoMovesLeft())
-            {
-                return true;
-            }
-            else if (CheckWin(s) == Players.NoPlayer)
-                return false;
-            else
-                return true;
         }
 
         /// <summary>
@@ -642,18 +630,8 @@ namespace Four_in_a_row
 
         public override void SetBot(LearningBot bot)
         {
-            this.bot = bot;
+            base.SetBot(bot);
             Restart(Mode);
-        }
-
-        public override LearningBot GetBot()
-        {
-            return bot;
-        }
-
-        public override void SetOpponent(LearningBot bot)
-        {
-            opponent = bot;
         }
 
         public override bool HandleKeyPress(Keys key)

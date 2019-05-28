@@ -93,45 +93,88 @@ namespace Controller
             }
         }
     }
-        /// <summary>
-        /// The base for all game related controls.
-        /// </summary>
-        public abstract class GameControlBase : ControlBase
+    /// <summary>
+    /// The base for all game related controls.
+    /// </summary>
+    public abstract class GameControlBase : ControlBase
+    {
+        // Player ID's
+        public enum Players
         {
-            // Player ID's
-            public enum Players
-            {
-                Player1 = 1,
-                Player2 = 2,
-                NoPlayer = 0
-            }
-
-            public Players CurrTurn { get; protected set; }
-            public bool IsDrawing { get; protected set; }
-            public int FeatureNum;
-
-            public GameControlBase(int ClickPriority) : base(ClickPriority)
-            {
-                IsLearnable = true; // Games are learnable
-            }
-
-            // All the required functions for machine learning
-            public abstract void StartLearn();
-            public abstract void StopLearn();
-            public abstract State GetState();
-            public abstract double GetReward(Players forPlayer);
-            public abstract double GetReward(Players forPlayer, State gameState);
-            public abstract bool IsLegalAction(Actione action);
-        public abstract bool IsLegalAction(Actione action, State s);
-            public abstract void DoAction(Actione action);
-            public abstract bool IsTerminalState();
-            public abstract bool IsTerminalState(State s);
-            public abstract void RegisterAction(State s, Actione a, Players player);
-            public abstract void Clean();
-            public abstract Players CheckWin();
-            public abstract Players CheckWin(State gameState);
-            public abstract void SetBot(LearningBot bot);
-            public abstract LearningBot GetBot();
-            public abstract void SetOpponent(LearningBot bot);
+            Player1 = 1,
+            Player2 = 2,
+            NoPlayer = 0
         }
+
+        public enum Against
+        {
+            Minimax,
+            Bot,
+            Noone
+        }
+
+        public Players CurrTurn { get; protected set; }
+        public int FeatureNum { get; protected set; }
+        protected LearningBot bot;
+        protected LearningBot opponent;
+        public int StateNum { get; protected set; }
+        public int ActionNum { get; protected set; }
+        public Against PlayAgainst { get; set; }
+        public Players BotPlayer { get; set; }
+
+        public GameControlBase(int ClickPriority) : base(ClickPriority)
+        {
+            IsLearnable = true; // Games are learnable
+        }
+
+        // All the required functions for machine learning
+        public abstract void StartLearn();
+        public abstract void StopLearn();
+        public abstract State GetState();
+        public abstract double GetReward(Players forPlayer);
+        public abstract double GetReward(Players forPlayer, State gameState);
+        public abstract bool IsLegalAction(Actione action);
+        public abstract bool IsLegalAction(Actione action, State s);
+        public abstract void DoAction(Actione action);
+        protected abstract bool NoMovesLeft();
+        public abstract void RegisterAction(State s, Actione a, Players player);
+        public abstract void Clean();
+        public abstract Players CheckWin();
+        public abstract Players CheckWin(State gameState);
+
+        public virtual void SetOpponent(LearningBot bot)
+        {
+            opponent = bot;
+        }
+
+        public virtual void SetBot(LearningBot bot)
+        {
+            this.bot = bot;
+        }
+
+        public virtual LearningBot GetBot()
+        {
+            return bot;
+        }
+
+        public virtual bool IsTerminalState()
+        {
+            if (NoMovesLeft())
+                return true;
+            else if (CheckWin() != Players.NoPlayer)
+                return true;
+            return false;
+        }
+
+        public virtual bool IsTerminalState(State s)
+        {
+            if (NoMovesLeft())
+                return true;
+            else if (CheckWin(s) != Players.NoPlayer)
+                return true;
+            return false;
+        }
+
+
     }
+}

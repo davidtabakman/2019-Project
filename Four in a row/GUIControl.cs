@@ -6,6 +6,7 @@ using Controller;
 using GameCenter;
 using Learning;
 using Microsoft.Xna.Framework.Input;
+using static GameCenter.Game1;
 
 namespace GUI
 {
@@ -40,6 +41,7 @@ namespace GUI
             InGame.AddButton(gd, new Rectangle(390, Game1.w_height - 25, 120, 25), "Save the bot", Color.Chocolate, "Save", new Func<bool>(() => Commands.SaveBot()));
             InGame.AddButton(gd, new Rectangle(520, Game1.w_height - 25, 120, 25), "Load the bot", Color.Chocolate, "Load", new Func<bool>(() => Commands.LoadBot()));
             InGame.AddButton(gd, new Rectangle(650, Game1.w_height - 25, 120, 25), "Load opponent", Color.Chocolate, "LoadOpp", new Func<bool>(() => Commands.LoadOpponent()));
+            InGame.AddButton(gd, new Rectangle(780, Game1.w_height - 25, 120, 25), "Change enemy", Color.Chocolate, "ChangeOpp", new Func<bool>(() => Commands.ChangeOpponent()));
         }
 
         private static void SetupSettings()
@@ -68,8 +70,8 @@ namespace GUI
 
     public class GUIControl : ControlBase
     {
-        public LinkedList<GUIBase> GUIList;
-        public Dictionary<string, int> GUIIDs;
+        private LinkedList<GUIBase> GUIList;
+        private Dictionary<string, int> GUIIDs;
         private int CountItems;
 
         public GUIControl(int ClickPriority) : base(ClickPriority)

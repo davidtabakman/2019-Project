@@ -13,15 +13,13 @@ namespace TicTacToe
 {
     public class TicTacControl : GameControlBase
     {
-        private Texture2D Board { get; set; }
-        private Texture2D Circle { get; set; }
-        private Texture2D X { get; set; }
+        private Texture2D Board;
+        private Texture2D Circle;
+        private Texture2D X;
         private Players[,] Tiles;
         private int RowNum;
         private int ColNum;
         private int ToWin;
-        private LearningBot bot;
-        private LearningBot opponent;
         private Players BotPlayer;
 
         /// <summary>
@@ -361,7 +359,7 @@ namespace TicTacToe
             return new State(stateID, Tiles);
         }
 
-        public bool NoMovesLeft()
+        protected override bool NoMovesLeft()
         {
             for (int x = 0; x < ColNum; x++)
             {
@@ -399,20 +397,6 @@ namespace TicTacToe
             else
                 CurrTurn = Players.Player1;
         }
-
-        public override bool IsTerminalState()
-        {
-           
-            if (CheckWin() == Players.Player1 || NoMovesLeft())
-            {
-                return true;
-            }
-            else if (CheckWin() == Players.NoPlayer)
-                return false ;
-            else
-                return true;
-        }
-
 
         public override double GetReward(Players forPlayer)
         {
@@ -457,28 +441,6 @@ namespace TicTacToe
             return false;
         }
 
-        public override bool IsTerminalState(State s)
-        {
-            Players[,] tempTiles = new Players[Tiles.GetLength(0), Tiles.GetLength(1)];
-            for(int x = 0; x < Tiles.GetLength(0); x++)
-            {
-                for(int y = 0; y < Tiles.GetLength(1); y++)
-                {
-                    tempTiles[x, y] = Tiles[x, y];
-                }
-            }
-            for (int x = 0; x < Tiles.GetLength(0); x++)
-            {
-                for (int y = 0; y < Tiles.GetLength(1); y++)
-                {
-                    Tiles[x, y] = (Players)s.Board[x, y];
-                }
-            }
-            bool isTerminal = IsTerminalState();
-            Tiles = tempTiles;
-            return isTerminal;
-        }
-
         /// <summary>
         /// Start learning with the bot in a different thread
         /// </summary>
@@ -505,16 +467,6 @@ namespace TicTacToe
             }
         }
 
-        public override void SetBot(LearningBot bot)
-        {
-            this.bot = bot;
-        }
-
-        public override LearningBot GetBot()
-        {
-            return bot;
-        }
-
         /// <summary>
         /// Handle a keyboard key press
         /// </summary>
@@ -523,11 +475,6 @@ namespace TicTacToe
         public override bool HandleKeyPress(Keys key)
         {
             return false;
-        }
-
-        public override void SetOpponent(LearningBot bot)
-        {
-            opponent = bot;
         }
 
         public override double GetReward(Players forPlayer, State gameState)

@@ -21,192 +21,214 @@ namespace GameCenter
         Game = 2
     }
 
-    /// <summary>
-    /// Commands for buttons
-    /// </summary>
-    public class Commands
-    {
-        private static string NET_SAVE_NAME = "net1";
-        private static string OPPONENT_SAVE_NAME = "opponent";
-        private static Modes FourMode = Modes.Quick;
-        private static Players BotTurn = Players.Player1;
-        public static GameTime gameTime { get; set; }
-
-        public static bool StartFourInARow(GraphicsDevice GraphicsDevice)
-        {
-            int[] args = { 7, 6, (int)FourMode }; // Arguments to pass into the game
-            Game1.Screen.SetGUI(PresetGuis.InGame);
-            FourInARowControl fourInARowControl = new FourInARowControl((int)Priorities.Game);
-            fourInARowControl.AttachBot(new DQN(false), BotTurn);
-            Game1.Screen.AddControl(fourInARowControl, args);
-            Game1.Screen.Start(GraphicsDevice);
-            return true;
-        }
-
-        public static bool StartTicTac(GraphicsDevice GraphicsDevice)
-        {
-            int[] args = { 3, 3, 3 }; // Arguments to pass into the game
-            Game1.Screen.SetGUI(PresetGuis.InGame);
-            TicTacControl ticTacControl = new TicTacControl((int)Priorities.Game);
-            ticTacControl.AttachBot(new DQN(false), BotTurn);
-            Game1.Screen.AddControl(ticTacControl, args);
-            Game1.Screen.Start(GraphicsDevice);
-            return true;
-        }
-
-        public static bool OnPressExit()
-        {
-            Game1.Screen.Clear();
-            Game1.Screen.SetGUI(PresetGuis.Menu);
-            return true;
-        }
-
-        public static bool StartLearn()
-        {
-            foreach(ControlBase control in Game1.Screen.controls.Keys)
-            {
-                if (control.IsLearnable)
-                {
-                    GameControlBase CastControl = (GameControlBase)control;
-                    CastControl.StartLearn();
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        internal static bool LoadOpponent()
-        {
-            foreach (ControlBase control in Game1.Screen.controls.Keys)
-            {
-                if (control.IsLearnable)
-                {
-                    GameControlBase CastControl = (GameControlBase)control;
-                    LearningBot bot = NetworkLoader.LoadLearningBot(OPPONENT_SAVE_NAME);
-                    bot.Setup(CastControl, bot.BotTurn);
-                    CastControl.SetOpponent(bot);
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        public static bool StopLearn()
-        {
-            foreach (ControlBase control in Game1.Screen.controls.Keys)
-            {
-                if (control.IsLearnable)
-                {
-                    GameControlBase CastControl = (GameControlBase)control;
-                    CastControl.StopLearn();
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        public static bool LoadBot()
-        {
-            foreach (ControlBase control in Game1.Screen.controls.Keys)
-            {
-                if (control.IsLearnable)
-                {
-                    GameControlBase CastControl = (GameControlBase)control;
-                    LearningBot bot = NetworkLoader.LoadLearningBot(NET_SAVE_NAME);
-                    bot.Setup(CastControl, bot.BotTurn);
-                    CastControl.SetBot(bot);
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        public static bool SaveBot()
-        {
-            foreach (ControlBase control in Game1.Screen.controls.Keys)
-            {
-                if (control.IsLearnable)
-                {
-                    GameControlBase CastControl = (GameControlBase)control;
-                    LearningBot bot = CastControl.GetBot();
-                    NetworkLoader.SaveLearningBot(NET_SAVE_NAME, bot);
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        public static bool SetFourMode()
-        {
-            if (FourMode == Modes.Quick)
-            {
-                FourMode = Modes.Graphical;
-                Game1.Screen.GetGUI().ShowNotification("Four in a row mode set to Graphical", new Vector2(300, 300), 1000, gameTime);
-                return true;
-            }
-            if (FourMode == Modes.Graphical)
-            {
-                FourMode = Modes.Quick;
-                Game1.Screen.GetGUI().ShowNotification("Four in a row mode set to Quick", new Vector2(300, 300), 1000, gameTime);
-                return true;
-            }
-            return false;
-
-        }
-
-        public static bool StartSettings()
-        {
-            Game1.Screen.Clear();
-            Game1.Screen.SetGUI(PresetGuis.Settings);
-            return true;
-        }
-
-        public static bool SetSaveName(string newName)
-        {
-            NET_SAVE_NAME = newName;
-            Game1.Screen.GetGUI().ShowNotification("Bot save/load name set to " + newName, new Vector2(300, 300), 1000, gameTime);
-            return true;
-        }
-
-        public static bool SetOpponentName(string newName)
-        {
-            OPPONENT_SAVE_NAME = newName;
-            Game1.Screen.GetGUI().ShowNotification("Opponent save/load name set to " + newName, new Vector2(300, 300), 1000, gameTime);
-            return true;
-        }
-
-        public static bool ChangePlayerTurn()
-        {
-            if (BotTurn == Players.Player1)
-            {
-                BotTurn = Players.Player2;
-                Game1.Screen.GetGUI().ShowNotification("Player's turn changed to Player1", new Vector2(300, 300), 1000, gameTime);
-            }
-            else
-            {
-                BotTurn = Players.Player1;
-                Game1.Screen.GetGUI().ShowNotification("Player's turn changed to Player2", new Vector2(300, 300), 1000, gameTime);
-            }
-            return true;
-        }
-    }
+    
     /// <summary>
     /// This is the main type for your game.
     /// </summary>
     public class Game1 : Game
     {
         // Constatnts
-        
+        /// <summary>
+        /// Commands for buttons
+        /// </summary>
+        public class Commands
+        {
+            private static string NET_SAVE_NAME = "net1";
+            private static string OPPONENT_SAVE_NAME = "opponent";
+            private static Modes FourMode = Modes.Quick;
+            private static Players BotTurn = Players.Player1;
+            public static GameTime gameTime { get; set; }
+
+            public static bool StartFourInARow(GraphicsDevice GraphicsDevice)
+            {
+                int[] args = { 7, 6, (int)FourMode }; // Arguments to pass into the game
+                Screen.SetGUI(PresetGuis.InGame);
+                FourInARowControl fourInARowControl = new FourInARowControl((int)Priorities.Game);
+                fourInARowControl.AttachBot(new DQN(false), BotTurn);
+                fourInARowControl.BotPlayer = BotTurn;
+                Screen.AddControl(fourInARowControl, args);
+                Screen.Start(GraphicsDevice);
+                return true;
+            }
+
+            public static bool StartTicTac(GraphicsDevice GraphicsDevice)
+            {
+                int[] args = { 3, 3, 3 }; // Arguments to pass into the game
+                Screen.SetGUI(PresetGuis.InGame);
+                TicTacControl ticTacControl = new TicTacControl((int)Priorities.Game);
+                ticTacControl.AttachBot(new DQN(false), BotTurn);
+                Screen.AddControl(ticTacControl, args);
+                Screen.Start(GraphicsDevice);
+                return true;
+            }
+
+            public static bool OnPressExit()
+            {
+                Screen.Clear();
+                Screen.SetGUI(PresetGuis.Menu);
+                return true;
+            }
+
+            public static bool StartLearn()
+            {
+                foreach (ControlBase control in Screen.controls.Keys)
+                {
+                    if (control.IsLearnable)
+                    {
+                        GameControlBase CastControl = (GameControlBase)control;
+                        CastControl.StartLearn();
+                        return true;
+                    }
+                }
+                return false;
+            }
+
+            internal static bool LoadOpponent()
+            {
+                foreach (ControlBase control in Game1.Screen.controls.Keys)
+                {
+                    if (control.IsLearnable)
+                    {
+                        GameControlBase CastControl = (GameControlBase)control;
+                        LearningBot bot = NetworkLoader.LoadLearningBot(OPPONENT_SAVE_NAME);
+                        bot.Setup(CastControl, bot.BotTurn);
+                        CastControl.SetOpponent(bot);
+                        return true;
+                    }
+                }
+                return false;
+            }
+
+            public static bool StopLearn()
+            {
+                foreach (ControlBase control in Game1.Screen.controls.Keys)
+                {
+                    if (control.IsLearnable)
+                    {
+                        GameControlBase CastControl = (GameControlBase)control;
+                        CastControl.StopLearn();
+                        return true;
+                    }
+                }
+                return false;
+            }
+
+            public static bool LoadBot()
+            {
+                foreach (ControlBase control in Screen.controls.Keys)
+                {
+                    if (control.IsLearnable)
+                    {
+                        GameControlBase CastControl = (GameControlBase)control;
+                        LearningBot bot = NetworkLoader.LoadLearningBot(NET_SAVE_NAME);
+                        bot.Setup(CastControl, bot.BotTurn);
+                        CastControl.SetBot(bot);
+                        return true;
+                    }
+                }
+                return false;
+            }
+
+            public static bool SaveBot()
+            {
+                foreach (ControlBase control in Screen.controls.Keys)
+                {
+                    if (control.IsLearnable)
+                    {
+                        GameControlBase CastControl = (GameControlBase)control;
+                        LearningBot bot = CastControl.GetBot();
+                        NetworkLoader.SaveLearningBot(NET_SAVE_NAME, bot);
+                        return true;
+                    }
+                }
+                return false;
+            }
+
+            public static bool SetFourMode()
+            {
+                if (FourMode == Modes.Quick)
+                {
+                    FourMode = Modes.Graphical;
+                    Screen.GetGUI().ShowNotification("Four in a row mode set to Graphical", new Vector2(300, 300), 1000, gameTime);
+                    return true;
+                }
+                if (FourMode == Modes.Graphical)
+                {
+                    FourMode = Modes.Quick;
+                    Screen.GetGUI().ShowNotification("Four in a row mode set to Quick", new Vector2(300, 300), 1000, gameTime);
+                    return true;
+                }
+                return false;
+
+            }
+
+            public static bool StartSettings()
+            {
+                Screen.Clear();
+                Screen.SetGUI(PresetGuis.Settings);
+                return true;
+            }
+
+            public static bool SetSaveName(string newName)
+            {
+                NET_SAVE_NAME = newName;
+                Screen.GetGUI().ShowNotification("Bot save/load name set to " + newName, new Vector2(300, 300), 1000, gameTime);
+                return true;
+            }
+
+            public static bool SetOpponentName(string newName)
+            {
+                OPPONENT_SAVE_NAME = newName;
+                Screen.GetGUI().ShowNotification("Opponent save/load name set to " + newName, new Vector2(300, 300), 1000, gameTime);
+                return true;
+            }
+
+            public static bool ChangePlayerTurn()
+            {
+                if (BotTurn == Players.Player1)
+                {
+                    BotTurn = Players.Player2;
+                    Screen.GetGUI().ShowNotification("Player's turn changed to Player1", new Vector2(300, 300), 1000, gameTime);
+                }
+                else
+                {
+                    BotTurn = Players.Player1;
+                    Screen.GetGUI().ShowNotification("Player's turn changed to Player2", new Vector2(300, 300), 1000, gameTime);
+                }
+                return true;
+            }
+
+            public static bool ChangeOpponent()
+            {
+                foreach (ControlBase control in Screen.controls.Keys)
+                {
+                    if (control.IsLearnable)
+                    {
+                        GameControlBase CastControl = (GameControlBase)control;
+                        if (CastControl.PlayAgainst == Against.Bot)
+                            CastControl.PlayAgainst = Against.Minimax;
+                        else if (CastControl.PlayAgainst == Against.Minimax)
+                            CastControl.PlayAgainst = Against.Noone;
+                        else if (CastControl.PlayAgainst == Against.Noone)
+                            CastControl.PlayAgainst = Against.Bot;
+                        Screen.GetGUI().ShowNotification("Player's turn changed to " + CastControl.PlayAgainst.ToString(), new Vector2(300, 10), 1000, gameTime);
+                        return true;
+                    }
+                }
+                return false;
+
+            }
+        }
 
         // Window size constansts (static)
         public const int w_width = 1000;
         public const int w_height = 1000;
 
-        public static GUIControl GUIControl;
-        public static Screen Screen;
+        public static GUIControl GUIControl { get; private set; }
+        public static Screen Screen { get; private set; }
 
         public static bool ShutDown = false;
-        public static Random random;
+        public static Random random { get; private set; }
 
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
@@ -236,11 +258,6 @@ namespace GameCenter
             EventHandle.InitEventHandle(this);
             random = new Random();
             MainFont = Content.Load<SpriteFont>("Basic");
-            NetworkVectors net2 = new NetworkVectors(new List<int>() { 3, 3, 2 });
-            NetworkLoader.SaveSerializable(net2, "net2");
-            net2 = null;
-            net2 = NetworkLoader.LoadNetworkVectors("net2");
-            net2.Print();
             PresetGuis.Setup(GraphicsDevice);
             Screen = new Screen();
             Screen.SetGUI(PresetGuis.Menu);

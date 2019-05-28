@@ -1,0 +1,64 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="Controller.ControlBase" Collapsed="true">
+    <Position X="3.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>QAQAAAAAQCAAAgAAAAAAAAAAAAAAAAAIAAAAAAhAEAA=</HashCode>
+      <FileName>ControlBase.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Controller.GameControlBase" Collapsed="true">
+    <Position X="2.25" Y="1.5" Width="1.5" />
+    <Compartments>
+      <Compartment Name="Nested Types" Collapsed="false" />
+    </Compartments>
+    <NestedTypes>
+      <Enum Name="Controller.GameControlBase.Players">
+        <TypeIdentifier>
+          <NewMemberFileName>GameControlBase.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Enum>
+      <Enum Name="Controller.GameControlBase.Against" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>GameControlBase.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Enum>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>CgEAAGAAABAAAFASAAAARgBAIAAIAAAAAJAEAAAAQAA=</HashCode>
+      <FileName>GameControlBase.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GUI.GUIControl" Collapsed="true">
+    <Position X="4.75" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AEQAAAAAQCAAAgAEAAAAAAAAAgAAAIACQAAAAIhAEAA=</HashCode>
+      <FileName>GUIControl.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Four_in_a_row.FourInARowControl" Collapsed="true">
+    <Position X="1.25" Y="2.75" Width="1.5" />
+    <Compartments>
+      <Compartment Name="Nested Types" Collapsed="false" />
+    </Compartments>
+    <NestedTypes>
+      <Enum Name="Four_in_a_row.FourInARowControl.Modes">
+        <TypeIdentifier>
+          <NewMemberFileName>FourInARowControl.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Enum>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>GgQAAmAAALAAEhQRAAEAYQDQQEAIABQAIAgAAAlAVAQ=</HashCode>
+      <FileName>FourInARowControl.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="TicTacToe.TicTacControl" Collapsed="true">
+    <Position X="3.25" Y="2.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>GAQAAGAAADAAAhAQAAAAYQDABAgIABIAAgAAAClQUAQ=</HashCode>
+      <FileName>TicTacControl.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>
