@@ -58,7 +58,7 @@ namespace Four_in_a_row
                 throw new Exception("Invalid arguments");
 
             MinimaxBot enemy = new MinimaxBot();
-            enemy.SetMaxDepth(8);
+            enemy.SetMaxDepth(10);
             Enemy = enemy;
             PlayAgainst = Against.Bot;
 
@@ -168,6 +168,7 @@ namespace Four_in_a_row
             AddCircle(position);
             if (IsTerminalState())
                 Clean();
+
             
             return true;
         }
@@ -579,7 +580,9 @@ namespace Four_in_a_row
         public override void Clean()
         {
             if (IsTerminalState())
+            {
                 Restart(Mode);
+            }
         }
 
         /// <summary>

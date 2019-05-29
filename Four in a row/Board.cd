@@ -1,85 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ClassDiagram MajorVersion="1" MinorVersion="1">
-  <Class Name="Four_in_a_row.Game1" Collapsed="true">
-    <Position X="6" Y="0.5" Width="1.5" />
+  <Class Name="GUI.TextBox">
+    <Position X="6.25" Y="5.25" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAQAEEAAAEAAAwAAAAAAAAAAAAAAAAgAAAIAAAAAAAQ=</HashCode>
-      <FileName>Game1.cs</FileName>
-    </TypeIdentifier>
-  </Class>
-  <Class Name="Four_in_a_row.FourInARowControl" Collapsed="true">
-    <Position X="6" Y="1.5" Width="1.5" />
-    <NestedTypes>
-      <Enum Name="Four_in_a_row.FourInARowControl.Players" Collapsed="true">
-        <TypeIdentifier>
-          <NewMemberFileName>Control.cs</NewMemberFileName>
-        </TypeIdentifier>
-      </Enum>
-      <Enum Name="Four_in_a_row.FourInARowControl.Modes" Collapsed="true">
-        <TypeIdentifier>
-          <NewMemberFileName>Control.cs</NewMemberFileName>
-        </TypeIdentifier>
-      </Enum>
-    </NestedTypes>
-    <TypeIdentifier>
-      <HashCode>CAQAAAABAIAAEhABAAAAAACwQAAAABQIIACAAAAAAAA=</HashCode>
-      <FileName>Control.cs</FileName>
-    </TypeIdentifier>
-  </Class>
-  <Class Name="Four_in_a_row.CircleObject" Collapsed="true">
-    <Position X="6" Y="5.25" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAACAAA=</HashCode>
-      <FileName>CircleObject.cs</FileName>
-    </TypeIdentifier>
-  </Class>
-  <Class Name="Four_in_a_row.DrawableObject" Collapsed="true">
-    <Position X="6" Y="3.75" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAQAAAAAAAAAAgAAAAAAIAAAAAAAAAAAAAIAIAAAAAA=</HashCode>
-      <FileName>DrawableObject.cs</FileName>
-    </TypeIdentifier>
-  </Class>
-  <Class Name="Four_in_a_row.GameObject" Collapsed="true">
-    <Position X="6" Y="2.5" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAQAAAIAAIAAggAAAAIAIACBAAAAAAAAAAAAIAAwAgI=</HashCode>
-      <FileName>GameObject.cs</FileName>
-    </TypeIdentifier>
-  </Class>
-  <Class Name="Four_in_a_row.EventHandler" Collapsed="true">
-    <Position X="10.75" Y="0.5" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAEAAAAAAAAAAAAAAIAAAAAAAAAAAA=</HashCode>
-      <FileName>EventHandler.cs</FileName>
-    </TypeIdentifier>
-  </Class>
-  <Class Name="Four_in_a_row.LBReleasedEventArgs" Collapsed="true">
-    <Position X="10.75" Y="2" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
-      <FileName>Mousey.cs</FileName>
-    </TypeIdentifier>
-  </Class>
-  <Class Name="Four_in_a_row.Mousey" Collapsed="true">
-    <Position X="10.75" Y="1.25" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAQgAAAQAAAAAAEgAAAQAIAAAAAKAAAAAAAAAAAAAAA=</HashCode>
-      <FileName>Mousey.cs</FileName>
-    </TypeIdentifier>
-  </Class>
-  <Class Name="Four_in_a_row.Physics" Collapsed="true">
-    <Position X="7.75" Y="2.5" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAABAAAAAAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
-      <FileName>Physics.cs</FileName>
-    </TypeIdentifier>
-  </Class>
-  <Class Name="Four_in_a_row.ShapeCreator" Collapsed="true">
-    <Position X="4.25" Y="1.5" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAACSAAAAAAAAAAAAAAAAAAAAA=</HashCode>
-      <FileName>ShapeDrawer.cs</FileName>
+      <HashCode>ACBAAAAAACAAAgBIAAAQAAAACAAAAAoAAAIQCAAAAgA=</HashCode>
+      <FileName>GUI.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Font Name="Segoe UI" Size="9" />
