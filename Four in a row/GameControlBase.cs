@@ -79,6 +79,10 @@ namespace Controller
             return new State(ID, newBoard);
         }
 
+        /// <summary>
+        /// Copy the contents of a state without creating a new one
+        /// </summary>
+        /// <param name="to">The state into which the data will be copied</param>
         public void Copy(State to)
         {
             if (to.Board.GetLength(0) == Board.GetLength(0) && to.Board.GetLength(1) == Board.GetLength(1))
@@ -127,7 +131,7 @@ namespace Controller
             IsLearnable = true; // Games are learnable
         }
 
-        // All the required functions for machine learning
+        // All the required functions for machine learning and running a game
         public abstract void StartLearn();
         public abstract void StopLearn();
         public abstract State GetState();
@@ -161,7 +165,7 @@ namespace Controller
         {
             if (NoMovesLeft())
                 return true;
-            else if (CheckWin() != Players.NoPlayer)
+            else if (CheckWin() != Players.NoPlayer) // Someone won
                 return true;
             return false;
         }
@@ -170,7 +174,7 @@ namespace Controller
         {
             if (NoMovesLeft())
                 return true;
-            else if (CheckWin(s) != Players.NoPlayer)
+            else if (CheckWin(s) != Players.NoPlayer) // Someone won
                 return true;
             return false;
         }

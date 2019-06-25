@@ -151,8 +151,8 @@ namespace GUI
 
         public override void Draw(SpriteBatch sb)
         {
-            if (gameTime.TotalGameTime.TotalMilliseconds - StartTime > ShowTime)
-                IsAlive = false;
+            if (gameTime.TotalGameTime.TotalMilliseconds - StartTime > ShowTime) // If the lifetime of the notification ran out
+                IsAlive = false; // Flag to kill itself
             else
                 sb.DrawString(Game1.MainFont, Message, Location, Color);
         }
@@ -170,6 +170,10 @@ namespace GUI
         private int MaxLength;
         private bool Capital;
 
+        /// <summary>
+        /// Create a textbox
+        /// </summary>
+        /// <param name="maxLength">The max length of text inside it</param>
         public TextBox(GraphicsDevice gd, Rectangle bounds, string initText, Color color, Color TextColor, int id, bool IsVisible, int maxLength) : base(id, IsVisible)
         {
             // Initialize text box variables

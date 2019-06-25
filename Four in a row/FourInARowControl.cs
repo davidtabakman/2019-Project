@@ -485,8 +485,12 @@ namespace Four_in_a_row
             return Players.NoPlayer;
         }
 
+        /// <summary>
+        /// Check for a winning situation in a given state
+        /// </summary>
         public override Players CheckWin(State gameState)
         {
+            // Switches the control's board with the gameState's board and return what CheckWin() returns
             Players[,] temp = (Players[,])circleList.Clone();
             for(int x = 0; x < circleList.GetLength(0); x++)
             {
@@ -539,6 +543,7 @@ namespace Four_in_a_row
             else
                 return -5;
         }
+
         /// <summary>
         /// Check if an action is legal in the current game state
         /// </summary>
@@ -549,6 +554,9 @@ namespace Four_in_a_row
             return true;
         }
 
+        /// <summary>
+        /// Check if an action is legal in a given state
+        /// </summary>
         public override bool IsLegalAction(Actione action, State s)
         {
             if ((Players)s.Board[action.ID, RowNum - 2] != Players.NoPlayer)
@@ -616,7 +624,7 @@ namespace Four_in_a_row
         {
             if (!bot.IsSetup)
                 bot.Setup(this, BotPlayer);
-            bot.Learn(200000, 0.05f, 0.0005f, 0.9f, 0.5f, Enemy);
+            bot.Learn(200000, 0.05f, 0.0005f, 0.9f, 0.5f);
             Restart(Mode);
         }
 

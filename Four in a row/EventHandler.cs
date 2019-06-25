@@ -61,6 +61,9 @@ namespace Four_in_a_row
             }
         }
 
+        /// <summary>
+        /// Handle of keyboard key release event
+        /// </summary>
         private static void KeyBoardReleaseHandle(object sender, KeyReleaseEventArgs eventArgs)
         {
             Keys key = eventArgs.PressedKey;

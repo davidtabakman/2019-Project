@@ -63,6 +63,7 @@ namespace Learning
             int last_epcohe = 0;
             int SampleSize = 100; // Size of gradient descent sample
             int iterations = 0;
+            bool AlreadyReported = false;
             List<Transition> miniBatch = null;
             List<Tuple<double[], double[]>> Q_Targets = new List<Tuple<double[], double[]>>(); 
             List<List<double[]>> Gradients = new List<List<double[]>>();
@@ -80,6 +81,8 @@ namespace Learning
             wins = 0;
             losses = 0;
             draws = 0;
+
+            int testGames = 0;
 
             // Observe state and declare variables for learning
             State state = Control.GetState();
@@ -115,7 +118,9 @@ namespace Learning
                     BotMove(against);
                 }
 
+                int temp = games;
                 Track(); // Update the tracking variables according to the current state of the game
+                testGames += games - temp;
 
                 // Get reward and observe new state
                 reward = Control.GetReward(BotTurn);
@@ -190,6 +195,7 @@ namespace Learning
                         }
                         target[transition.a.ID] = t;
                         Q_Targets.Add(new Tuple<double[], double[]>(CreateInputArray(transition.s.Board), ApplyFunction(target, Activation_Functions.Sigmoid.Function)));
+                        // Loss for tracking
                         addLoss += 0.5 * Math.Pow(ApplyFunction(target, Activation_Functions.Sigmoid.Function)[transition.a.ID] - OldNeuralNet.Activations[NeuralNet.Activations.Count - 1][transition.a.ID], 2);
                     }
                 }
@@ -203,17 +209,30 @@ namespace Learning
                 if (Epsilon > EpsilonLimit)
                     Epsilon -= EpsilonDecrease;
 
+                // Every 20 games report on the win rate against a random bot
+                if (testGames % 20 != 0)
+                    AlreadyReported = false;
+
+                if (testGames % 20 == 0 && !AlreadyReported)
+                {
+                    Console.WriteLine(Test(300) + " total games: " + testGames);
+                    AlreadyReported = true;
+                }
+
                 // Report the progress
-                if (current_epoche % 1000 == 0 && current_epoche != last_epcohe)
+                if (current_epoche % 200 == 0 && current_epoche != last_epcohe)
                 {
                     last_epcohe = current_epoche;
-                    Console.WriteLine("Learning percentage: {0}%, win rate: {1}%, loss rate: {3}%, draw rate: {4}%, avg cost: {2}", current_epoche / (double)EpocheNumber * 100, (double)wins * 100 / games, loss / 1000, (double)losses * 100 / games, (double)draws * 100 / games);
+                    Console.WriteLine("Learning percentage: {0}%, win rate: {1}%, loss rate: {3}%, draw rate: {4}%, avg cost: {2}, games:" + testGames, current_epoche / (double)EpocheNumber * 100, (double)wins * 100 / games, loss / 200, (double)losses * 100 / games, (double)draws * 100 / games);
                     wins = 0;
                     draws = 0;
                     losses = 0;
                     loss = 0;
                     games = 0;
                 }
+
+
+
 
                 current_epoche++;
                 Control.Clean(); // Make the control ready for another move
@@ -233,15 +252,15 @@ namespace Learning
         {
             int maxID = 0;
             double max = 0;
-            // Regular max searching by value
             if (IsMultidimensionalOutput) 
             {
+                // Feed the state to the neural network and find the maximum
                 NeuralNet.Feed(CreateInputArray(state.Board));
                 for (int id = 0; id < control.ActionNum; id++)
                 {
                     if (NeuralNet.Activations[NeuralNet.Activations.Count - 1][id] > max)
                     {
-                        if (isLegal)
+                        if (isLegal) // If the action has to be legal
                         {
                             if (control.IsLegalAction(new Actione(id)))
                             {
@@ -261,11 +280,12 @@ namespace Learning
             {
                 for (int id = 0; id < control.ActionNum; id++)
                 {
+                    // Feed the state and the action to the neural network
                     NeuralNet.Feed(CreateInputArray(state.Board, id));
 
                     if (NeuralNet.Activations[NeuralNet.Activations.Count - 1][0] > max)
                     {
-                        if (isLegal)
+                        if (isLegal) // If the action has to be legal
                         {
                             if (control.IsLegalAction(new Actione(id)))
                             {
@@ -282,11 +302,11 @@ namespace Learning
 
                 }
             }
-            return new Actione(maxID);
+            return new Actione(maxID); // Return the best action
         }
             
         /// <summary>
-        /// Transform a two dimensional baord array to a one dimensional input array for a neural network of a specific shape
+        /// Transform a two dimensional baord array to a one dimensional input array for a neural network of a specific shape.
         /// It also contains the action
         /// </summary>
         /// <param name="board"></param>
@@ -353,11 +373,11 @@ namespace Learning
         {
             base.Setup(control, player);
             rand = new Random();
-            if (IsMultidimensionalOutput)
-                Dimensions = new List<int> { control.FeatureNum, 130, 70, control.ActionNum };
-            else
-                Dimensions = new List<int> { control.FeatureNum + control.ActionNum, 130, 70, 1 };
-            if (NeuralNet == null)
+            if (IsMultidimensionalOutput) // If the input is only the state
+                Dimensions = new List<int> { control.FeatureNum, 110, 50, control.ActionNum };
+            else // If the input is the state and action
+                Dimensions = new List<int> { control.FeatureNum + control.ActionNum, 110, 50, 1 };
+            if (NeuralNet == null) // If the neural network wasn't loaded in another way
                 NeuralNet = new NetworkVectors(Dimensions);
             OldNeuralNet = (NetworkVectors)NeuralNet.Clone();
             Control = control;

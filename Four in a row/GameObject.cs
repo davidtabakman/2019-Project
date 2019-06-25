@@ -30,11 +30,17 @@ namespace Four_in_a_row
             this.Bounds = Bounds;
         }
 
+        /// <summary>
+        /// Stop moving
+        /// </summary>
         public void Freeze()
         {
             Frozen = true;
         }
 
+        /// <summary>
+        /// Move according to its speed
+        /// </summary>
         public virtual void Update(List<GameObject> gameObjects)
         {
             Location += Speed;

@@ -1,6 +1,7 @@
 ﻿using Controller;
 using System;
 using System.Runtime.Serialization;
+using static Controller.GameControlBase;
 
 namespace Learning
 {
@@ -27,7 +28,7 @@ namespace Learning
 
     public abstract class LearningBot : Bot, ISerializable
     {
-        public GameControlBase.Players BotTurn { get; protected set; }
+        public GameControlBase.Players BotTurn { get; protected set; } // My turn
         public bool IsLearning { get; protected set; }
         protected GameControlBase Control;
         public bool IsSetup { get; protected set; }
@@ -66,13 +67,44 @@ namespace Learning
         protected int draws = 0;
 
         /// <summary>
-        /// Track the win lose draw ratio
+        /// Test the performence of the bot against a random bot for a number of games. Return the win rate (0-1)
+        /// </summary>
+        protected virtual double Test(int gameNum)
+        {
+            int game = 0;
+            int win = 0;
+            while (game < gameNum)
+            {
+                if (Control.CurrTurn == BotTurn)
+                    TakeAction(Control, Control.GetState());
+                else
+                    BotMove(null);
+                if (Control.IsTerminalState())
+                {
+                    Players Winner = Control.CheckWin();
+                    if (Winner == BotTurn)
+                    {
+                        win++;
+                        game++;
+                    }
+                    else
+                    {
+                        game++;
+                    }
+                    Control.Clean();
+                }
+            }
+            return (double)win / game;
+        }
+
+        /// <summary>
+        /// Update the win lose draw variables
         /// </summary>
         protected void Track()
         {
             if (Control.IsTerminalState())
             {
-                GameControlBase.Players Winner = Control.CheckWin();
+                Players Winner = Control.CheckWin();
                 if (Winner == BotTurn)
                 {
                     wins++;

@@ -237,7 +237,7 @@ namespace Network
         {
             using (MemoryStream stream = new MemoryStream())
             {
-                if (GetType().IsSerializable)
+                if (GetType().IsSerializable) // Clone using serializing
                 {
                     BinaryFormatter formatter = new BinaryFormatter();
                     formatter.Serialize(stream, this);

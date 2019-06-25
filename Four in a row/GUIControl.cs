@@ -23,6 +23,7 @@ namespace GUI
 
         public static GUIControl Settings = new GUIControl((int)Priorities.GUI);
 
+        // Setup various preser guis
         private static void SetupMenu()
         {
             Menu.Start(gd, null);
@@ -135,7 +136,8 @@ namespace GUI
         {
             if (GUIIDs.ContainsKey(name)) {
                 foreach (GUIBase gb in GUIList)
-                    if (gb.ID == GUIIDs[name])
+                    // If the gui's ID is the ID that corresponds with the given name, delete it
+                    if (gb.ID == GUIIDs[name]) 
                     {
                         gb.Dispose();
                         GUIList.Remove(gb);
@@ -147,6 +149,9 @@ namespace GUI
             
         }
 
+        /// <summary>
+        /// Delete all GUIs
+        /// </summary>
         public override void Clear()
         {
             foreach (string key in GUIIDs.Keys)
@@ -158,6 +163,7 @@ namespace GUI
         {
             foreach (GUIBase gui in GUIList)
             {
+                // If the gui's ID is the ID that corresponds with the given name, return it
                 if (gui.ID == GUIIDs[guiName])
                     return gui;
             }

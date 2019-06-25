@@ -479,22 +479,67 @@ namespace TicTacToe
 
         public override double GetReward(Players forPlayer, State gameState)
         {
-            throw new NotImplementedException();
+            if (CheckWin(gameState) == forPlayer)
+            {
+                return 5;
+            }
+            else if (CheckWin(gameState) != Players.NoPlayer)
+            {
+                return -5;
+            }
+            else if (IsTerminalState(gameState))
+            {
+                return -2.5;
+            }
+            else
+                return 0;
+
         }
 
+        /// <summary>
+        /// Check if someone won in the given state
+        /// </summary>
         public override Players CheckWin(State gameState)
         {
-            throw new NotImplementedException();
+            // Copy the state to the Control's board and return what CheckWin() returns
+            Players[,] temp = (Players[,])Tiles.Clone();
+            for (int x = 0; x < Tiles.GetLength(0); x++)
+            {
+                for (int y = 0; y < Tiles.GetLength(1); y++)
+                {
+                    Tiles[x, y] = (Players)gameState.Board[x, y];
+                }
+            }
+            Players won = CheckWin();
+            Tiles = temp;
+            return won;
+
         }
 
+        /// <summary>
+        /// Register the action inside the given state, and it is done by given player
+        /// </summary>
         public override void RegisterAction(State s, Actione a, Players player)
         {
-            throw new NotImplementedException();
+            int addY = a.ID / ColNum;
+            int addX = a.ID % ColNum;
+
+            if ((Players)s.Board[addX, addY] == Players.NoPlayer)
+                s.Board[addX, addY] = (double)CurrTurn;
         }
 
+        /// <summary>
+        /// Is the action legal in the given state
+        /// </summary>
         public override bool IsLegalAction(Actione action, State s)
         {
-            throw new NotImplementedException();
+            int addY = action.ID / ColNum;
+            int addX = action.ID % ColNum;
+
+            if ((Players)s.Board[addX, addY] == Players.NoPlayer)
+                return true;
+            return false;
+
         }
     }
 }

@@ -27,12 +27,12 @@ namespace GameCenter
     /// </summary>
     public class Game1 : Game
     {
-        // Constatnts
         /// <summary>
         /// Commands for buttons
         /// </summary>
         public class Commands
         {
+            // Variables for various commands
             private static string NET_SAVE_NAME = "net1";
             private static string OPPONENT_SAVE_NAME = "opponent";
             private static Modes FourMode = Modes.Quick;
@@ -56,7 +56,7 @@ namespace GameCenter
                 int[] args = { 3, 3, 3 }; // Arguments to pass into the game
                 Screen.SetGUI(PresetGuis.InGame);
                 TicTacControl ticTacControl = new TicTacControl((int)Priorities.Game);
-                ticTacControl.AttachBot(new DQN(false), BotTurn);
+                ticTacControl.AttachBot(new Q_Learning(), BotTurn);
                 Screen.AddControl(ticTacControl, args);
                 Screen.Start(GraphicsDevice);
                 return true;
@@ -319,7 +319,6 @@ namespace GameCenter
 
             // TODO: Add your drawing code here
             spriteBatch.Begin();
-            // Draw the state in Controller
 
             Screen.Draw(spriteBatch);
 

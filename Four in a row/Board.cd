@@ -1,10 +1,67 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ClassDiagram MajorVersion="1" MinorVersion="1">
-  <Class Name="GUI.TextBox">
-    <Position X="6.25" Y="5.25" Width="1.5" />
+  <Class Name="Four_in_a_row.EventHandle" Collapsed="true">
+    <Position X="1.5" Y="1.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>ACBAAAAAACAAAgBIAAAQAAAACAAAAAoAAAIQCAAAAgA=</HashCode>
-      <FileName>GUI.cs</FileName>
+      <HashCode>AAAAAAAAAAAAAAAEAAAIAAAAAAAARAAIAAAAAAAAAAA=</HashCode>
+      <FileName>EventHandler.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Four_in_a_row.KeyBoardey" Collapsed="true">
+    <Position X="3.25" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>wAQAAAIAAAEAAEAAAAAAAAAAAAAIAAAAAAAAAABAAAA=</HashCode>
+      <FileName>KeyBoardey.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Four_in_a_row.Mousey" Collapsed="true">
+    <Position X="1.5" Y="2.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQgAAAQAAAAAAEgAAAQAIAAAAAKAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Mousey.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GameCenter.Screen" Collapsed="true">
+    <Position X="3.25" Y="2.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAABAACAAAgAAAAAAAAAAIAAAACAEAAAAAEBAAAA=</HashCode>
+      <FileName>Screen.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Helper.ShapeCreator" Collapsed="true">
+    <Position X="1.5" Y="3.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAQAAACgAAACAAAAAAABAAAA=</HashCode>
+      <FileName>ShapeDrawer.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Helper.Helper" Collapsed="true">
+    <Position X="3.25" Y="3.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>CAIAAAAABBAAAAAAAAAAwAAAiQAABAAgAAYAAIAAgAQ=</HashCode>
+      <FileName>Tests.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Network.Activation_Function" Collapsed="true">
+    <Position X="5" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAEAAAgAAAAAAAAAIAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Network\Activation Functions.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Network.NetworkVectors" Collapsed="true">
+    <Position X="5" Y="2.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AIBAAgEAAABAAgAAIAAAAAIgAgBAAAAAAEQAAAAEABA=</HashCode>
+      <FileName>Network\NetworkVectors.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Network.NetworkLoader" Collapsed="true">
+    <Position X="5" Y="3.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AEAAAAIAAQAAAAQAAQAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Network\FileIO.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Font Name="Segoe UI" Size="9" />
